@@ -10,6 +10,7 @@ DECLARE
   user_id1 UUID;
   user_id2 UUID;
   user_id3 UUID;
+  user_id4 UUID;
 BEGIN
   -- 1. Admin: turhanhamza@gmail.com
   INSERT INTO auth.users (
@@ -229,6 +230,80 @@ BEGIN
   VALUES (
     'HILMI123',
     user_id3,
+    100,
+    now() + interval '1 year',
+    true
+  )
+  ON CONFLICT (code) DO NOTHING;
+
+  -- 4. Admin: tuthanmehmetzafer61890@gmail.com
+  INSERT INTO auth.users (
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    created_at,
+    updated_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    is_super_admin,
+    role
+  ) VALUES (
+    'tuthanmehmetzafer61890@gmail.com',
+    '$2a$10$Xt9Ks1/Uf9Yl5iBSQAGnYODnVlF3HEeHfRn5GS1.fYQdQoLHaJQ9e', -- lisedefteri61
+    now(),
+    now(),
+    now(),
+    '{"provider":"email","providers":["email"]}',
+    '{"username":"tuthanmehmet","full_name":"Mehmet Zafer Tuthan","role":"admin"}',
+    false,
+    'authenticated'
+  )
+  ON CONFLICT (email) DO UPDATE
+  SET
+    encrypted_password = EXCLUDED.encrypted_password,
+    email_confirmed_at = EXCLUDED.email_confirmed_at,
+    updated_at = EXCLUDED.updated_at,
+    raw_user_meta_data = EXCLUDED.raw_user_meta_data
+  RETURNING id INTO user_id4;
+
+  -- 4. Admin profili
+  INSERT INTO public.profiles (
+    id,
+    username,
+    display_name,
+    avatar_url,
+    bio,
+    email,
+    total_points,
+    level,
+    created_at,
+    updated_at
+  ) VALUES (
+    user_id4,
+    'tuthanmehmet',
+    'Mehmet Zafer Tuthan',
+    'https://api.dicebear.com/6.x/avataaars/svg?seed=tuthanmehmet',
+    'Lise Defteri Admin',
+    'tuthanmehmetzafer61890@gmail.com',
+    1000,
+    10,
+    now(),
+    now()
+  )
+  ON CONFLICT (id) DO UPDATE
+  SET
+    username = EXCLUDED.username,
+    display_name = EXCLUDED.display_name,
+    avatar_url = EXCLUDED.avatar_url,
+    bio = EXCLUDED.bio,
+    email = EXCLUDED.email,
+    updated_at = EXCLUDED.updated_at;
+
+  -- 4. Admin için davet kodu
+  INSERT INTO invite_codes (code, created_by, max_uses, expires_at, is_active)
+  VALUES (
+    'MEHMET123',
+    user_id4,
     100,
     now() + interval '1 year',
     true
