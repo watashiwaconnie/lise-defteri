@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lise Defteri - Kişisel Web Sitesi ve Forum</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Lise Defteri</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html" class="active">Ana Sayfa</a></li>
+                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="portfolyo.html">Portfolyo</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="forum.html">Forum</a></li>
+                    <!-- Auth links will be added dynamically by JavaScript -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Lise Defteri'ne Hoş Geldiniz</h2>
+                <p>Kişisel web sitem ve arkadaşlarımla paylaşım yaptığım foruma hoş geldiniz. Burada projelerimi, düşüncelerimi ve daha fazlasını bulabilirsiniz.</p>
+                <div class="hero-buttons">
+                    <a href="hakkimda.html" class="btn btn-primary">Hakkımda</a>
+                    <a href="forum.html" class="btn btn-secondary">Forum'a Katıl</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main>
+
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">Neler Sunuyorum?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <h3>Kişisel Blog</h3>
+                        <p>Düşüncelerimi, deneyimlerimi ve öğrendiklerimi paylaştığım blog yazılarım.</p>
+                        <a href="blog.html" class="btn btn-outline">Blog'a Git</a>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🖼️</div>
+                        <h3>Portfolyo</h3>
+                        <p>Tamamladığım projeler ve çalışmalarımın yer aldığı portfolyo sayfası.</p>
+                        <a href="portfolyo.html" class="btn btn-outline">Portfolyo'ya Git</a>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💬</div>
+                        <h3>Forum</h3>
+                        <p>Arkadaşlarımla ve ziyaretçilerle etkileşimde bulunduğum forum alanı.</p>
+                        <a href="forum.html" class="btn btn-outline">Forum'a Git</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="latest-posts">
+            <div class="container">
+                <h2 class="section-title">Son Blog Yazıları</h2>
+                <div class="posts-grid" id="latest-posts-container">
+                    <!-- Blog yazıları JavaScript ile yüklenecek -->
+                    <div class="post-card">
+                        <div class="post-image" style="background-image: url('https://via.placeholder.com/300x200');"></div>
+                        <div class="post-content">
+                            <h3>Örnek Blog Yazısı 1</h3>
+                            <p class="post-date">15 Mayıs 2023</p>
+                            <p class="post-excerpt">Bu bir örnek blog yazısıdır. İçerik eklendikçe burada gerçek yazılar görünecektir.</p>
+                            <a href="#" class="btn btn-outline">Devamını Oku</a>
+                        </div>
+                    </div>
+                    <div class="post-card">
+                        <div class="post-image" style="background-image: url('https://via.placeholder.com/300x200');"></div>
+                        <div class="post-content">
+                            <h3>Örnek Blog Yazısı 2</h3>
+                            <p class="post-date">10 Mayıs 2023</p>
+                            <p class="post-excerpt">Bu bir örnek blog yazısıdır. İçerik eklendikçe burada gerçek yazılar görünecektir.</p>
+                            <a href="#" class="btn btn-outline">Devamını Oku</a>
+                        </div>
+                    </div>
+                    <div class="post-card">
+                        <div class="post-image" style="background-image: url('https://via.placeholder.com/300x200');"></div>
+                        <div class="post-content">
+                            <h3>Örnek Blog Yazısı 3</h3>
+                            <p class="post-date">5 Mayıs 2023</p>
+                            <p class="post-excerpt">Bu bir örnek blog yazısıdır. İçerik eklendikçe burada gerçek yazılar görünecektir.</p>
+                            <a href="#" class="btn btn-outline">Devamını Oku</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="view-all">
+                    <a href="blog.html" class="btn btn-primary">Tüm Yazıları Gör</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="forum-preview">
+            <div class="container">
+                <h2 class="section-title">Forum'dan Son Konular</h2>
+                <div class="forum-topics" id="latest-topics-container">
+                    <!-- Forum konuları JavaScript ile yüklenecek -->
+                    <div class="topic-card">
+                        <div class="topic-info">
+                            <h3>Örnek Forum Konusu 1</h3>
+                            <p class="topic-meta">Kategori: <span>Genel</span> | Yazar: <span>Kullanıcı1</span> | Tarih: <span>20 Mayıs 2023</span></p>
+                            <p class="topic-excerpt">Bu bir örnek forum konusudur. İçerik eklendikçe burada gerçek konular görünecektir.</p>
+                        </div>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="stat-value">5</span>
+                                <span class="stat-label">Cevap</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">120</span>
+                                <span class="stat-label">Görüntüleme</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-info">
+                            <h3>Örnek Forum Konusu 2</h3>
+                            <p class="topic-meta">Kategori: <span>Teknoloji</span> | Yazar: <span>Kullanıcı2</span> | Tarih: <span>18 Mayıs 2023</span></p>
+                            <p class="topic-excerpt">Bu bir örnek forum konusudur. İçerik eklendikçe burada gerçek konular görünecektir.</p>
+                        </div>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="stat-value">3</span>
+                                <span class="stat-label">Cevap</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">85</span>
+                                <span class="stat-label">Görüntüleme</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="view-all">
+                    <a href="forum.html" class="btn btn-primary">Forum'a Git</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    <p>&copy; <span id="current-year"></span> Lise Defteri. Tüm hakları saklıdır.</p>
+                </div>
+                <div class="social-links">
+                    <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="#" target="_blank" rel="noopener noreferrer">Twitter</a>
+                    <a href="https://github.com/watashiwaconnie/lise-defteri.git" target="_blank" rel="noopener noreferrer">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Yıl bilgisini otomatik güncelle
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Supabase istemcisini başlat
+        const supabaseUrl = 'https://owwucdnfvzrwrqxseuyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93d3VjZG5mdnpyd3JxeHNldXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5NTc0ODEsImV4cCI6MjA2ODUzMzQ4MX0.ro_9mRz3QbSFOQc5Fse-qeuuFkHjWXJyaBbcFE47eI4';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Son forum konularını yükle (gerçek veri olduğunda kullanılacak)
+        async function loadLatestTopics() {
+            try {
+                const { data: topics, error } = await supabase
+                    .from('forum_topics')
+                    .select(`
+                        id,
+                        title,
+                        content,
+                        created_at,
+                        view_count,
+                        forum_categories(name),
+                        profiles(username),
+                        forum_posts(count)
+                    `)
+                    .order('created_at', { ascending: false })
+                    .limit(2);
+                
+                if (error) {
+                    console.error('Forum konuları yüklenirken hata:', error.message);
+                    return;
+                }
+                
+                // Eğer veri varsa, konuları görüntüle
+                if (topics && topics.length > 0) {
+                    const topicsContainer = document.getElementById('latest-topics-container');
+                    topicsContainer.innerHTML = '';
+                    
+                    topics.forEach(topic => {
+                        const date = new Date(topic.created_at).toLocaleDateString('tr-TR', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                        
+                        const postCount = topic.forum_posts ? topic.forum_posts.length : 0;
+                        
+                        const topicCard = document.createElement('div');
+                        topicCard.classList.add('topic-card');
+                        topicCard.innerHTML = `
+                            <div class="topic-info">
+                                <h3>${topic.title}</h3>
+                                <p class="topic-meta">Kategori: <span>${topic.forum_categories.name}</span> | Yazar: <span>${topic.profiles.username}</span> | Tarih: <span>${date}</span></p>
+                                <p class="topic-excerpt">${topic.content.substring(0, 100)}${topic.content.length > 100 ? '...' : ''}</p>
+                            </div>
+                            <div class="topic-stats">
+                                <div class="stat">
+                                    <span class="stat-value">${postCount}</span>
+                                    <span class="stat-label">Cevap</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">${topic.view_count || 0}</span>
+                                    <span class="stat-label">Görüntüleme</span>
+                                </div>
+                            </div>
+                        `;
+                        
+                        topicsContainer.appendChild(topicCard);
+                    });
+                }
+            } catch (error) {
+                console.error('Forum konuları yüklenirken hata:', error.message);
+            }
+        }
+        
+        // Sayfa yüklendiğinde son konuları yüklemeyi dene
+        // Şu an için yorum satırında, çünkü henüz veritabanı kurulu değil
+        // document.addEventListener('DOMContentLoaded', loadLatestTopics);
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+name: Post-Deployment Checks
+
+on:
+  deployment_status:
+    states: [success]
+
+jobs:
+  health-check:
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for DNS propagation
+        run: sleep 60
+        
+      - name: Check main page
+        run: |
+          curl -sSf ${{ github.event.deployment_status.target_url }} > /dev/null
+          echo "✅ Main page is accessible"
+          
+      - name: Check API health
+        run: |
+          response=$(curl -sSf ${{ github.event.deployment_status.target_url }}/api/health)
+          status=$(echo $response | jq -r '.status')
+          if [ "$status" != "ok" ]; then
+            echo "❌ API health check failed"
+            exit 1
+          fi
+          echo "✅ API health check passed"
+          
+      - name: Check Supabase connection
+        run: |
+          response=$(curl -sSf ${{ github.event.deployment_status.target_url }}/api/supabase-health)
+          status=$(echo $response | jq -r '.status')
+          if [ "$status" != "connected" ]; then
+            echo "❌ Supabase connection check failed"
+            exit 1
+          fi
+          echo "✅ Supabase connection check passed"
+          
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "✅ Deployment to ${{ github.event.deployment_status.environment }} was successful and all health checks passed!"
+          
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Deployment to ${{ github.event.deployment_status.environment }} was successful but health checks failed!"
+
+  smoke-test:
+    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment != 'Preview'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Run smoke tests
+        run: npx playwright test tests/smoke.test.js
+        env:
+          TEST_URL: ${{ github.event.deployment_status.target_url }}

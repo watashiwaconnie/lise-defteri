@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mesajlar | Lise Defteri</title>
+  
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Modern Styles -->
+  <link rel="stylesheet" href="modern-styles.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">Lise Defteri</div>
+      </div>
+      
+      <div class="sidebar-nav">
+        <a href="index.html" class="sidebar-nav-item">
+          <i class="fas fa-home"></i>
+          Ana Sayfa
+        </a>
+        <a href="forum.html" class="sidebar-nav-item">
+          <i class="fas fa-comments"></i>
+          Forum
+        </a>
+        <a href="mesajlar.html" class="sidebar-nav-item active">
+          <i class="fas fa-envelope"></i>
+          Mesajlar
+        </a>
+        <a href="profil.html" class="sidebar-nav-item">
+          <i class="fas fa-user"></i>
+          Profil
+        </a>
+        <a href="#" class="sidebar-nav-item" id="logoutButton">
+          <i class="fas fa-sign-out-alt"></i>
+          Çıkış Yap
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Navbar -->
+      <nav class="navbar">
+        <div class="navbar-left">
+          <button class="navbar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h4 class="mb-0">Mesajlar</h4>
+        </div>
+        
+        <div class="navbar-right">
+          <div class="navbar-user" id="navbarUser">
+            <div class="navbar-user-avatar" id="userAvatar">LD</div>
+            <div class="navbar-user-info">
+              <div class="fw-medium" id="userName">Kullanıcı</div>
+              <div class="text-muted small" id="userEmail">kullanici@email.com</div>
+            </div>
+          </div>
+        </div>
+      </nav>
+      
+      <div class="container-fluid mt-4">
+        <div class="row">
+          <!-- Konuşma Listesi -->
+          <div class="col-md-4 col-lg-3 mb-4">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Konuşmalar</h5>
+                <button class="btn btn-sm btn-primary" id="newConversationBtn">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+              <div class="card-body p-0">
+                <div class="list-group list-group-flush" id="conversationsList">
+                  <!-- Konuşmalar buraya gelecek -->
+                  <div class="text-center py-4 text-muted" id="noConversationsMessage">
+                    <i class="fas fa-comments fa-2x mb-2"></i>
+                    <p>Henüz konuşma bulunmuyor</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Mesajlaşma Alanı -->
+          <div class="col-md-8 col-lg-9">
+            <div class="chat-container" style="height: calc(100vh - 140px);">
+              <!-- Mesajlaşma Başlığı -->
+              <div class="chat-header" id="chatHeader">
+                <div class="chat-header-avatar avatar" id="conversationAvatar">LD</div>
+                <div class="chat-header-info">
+                  <div class="chat-header-name" id="conversationName">Konuşma seçilmedi</div>
+                  <div class="chat-header-status" id="conversationStatus">Lütfen bir konuşma seçin</div>
+                </div>
+                <div class="dropdown" id="conversationMenuContainer" style="display: none;">
+                  <button class="btn btn-icon btn-sm" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" id="viewParticipantsBtn">Katılımcıları Görüntüle</a></li>
+                    <li><a class="dropdown-item" href="#" id="addParticipantBtn">Katılımcı Ekle</a></li>
+                    <li><a class="dropdown-item" href="#" id="editConversationBtn">Konuşmayı Düzenle</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#" id="leaveConversationBtn">Konuşmadan Ayrıl</a></li>
+                  </ul>
+                </div>
+              </div>
+              
+              <!-- Mesaj Listesi -->
+              <div class="chat-messages" id="messagesList">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100" id="noMessagesPlaceholder">
+                  <i class="fas fa-comments fa-3x mb-3 text-muted"></i>
+                  <p class="text-muted">Mesajlarınız burada görünecek</p>
+                  <p class="text-muted small">Bir konuşma seçin veya yeni bir konuşma başlatın</p>
+                </div>
+                <!-- Mesajlar buraya gelecek -->
+              </div>
+              
+              <!-- Mesaj Giriş Alanı -->
+              <div class="chat-input" id="messageInputContainer" style="display: none;">
+                <input type="text" class="chat-input-field" id="messageInput" placeholder="Mesajınızı yazın...">
+                <button class="chat-input-send" id="sendMessageBtn">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Yeni Konuşma Modal -->
+  <div class="modal fade" id="newConversationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Yeni Konuşma</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="isGroupConversation">
+            <label class="form-check-label" for="isGroupConversation">
+              Grup konuşması oluştur
+            </label>
+          </div>
+          
+          <div class="mb-3" id="conversationTitleContainer" style="display: none;">
+            <label for="conversationTitle" class="form-label">Konuşma Başlığı</label>
+            <input type="text" class="form-control" id="conversationTitle" placeholder="Grup adı girin">
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Katılımcılar</label>
+            <div class="input-group mb-2">
+              <input type="text" class="form-control" id="participantSearch" placeholder="Kullanıcı ara...">
+              <button class="btn btn-outline-secondary" type="button" id="searchParticipantBtn">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+            <div id="searchResults" class="list-group mb-3" style="max-height: 200px; overflow-y: auto; display: none;"></div>
+            
+            <div id="selectedParticipants" class="d-flex flex-wrap gap-2 mt-2"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+          <button type="button" class="btn btn-primary" id="createConversationBtn">Oluştur</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Katılımcılar Modal -->
+  <div class="modal fade" id="participantsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Katılımcılar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group" id="participantsList">
+            <!-- Katılımcılar buraya gelecek -->
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Messaging API -->
+  <script src="js/messaging-api.js"></script>
+  
+  <script>
+    // Supabase Client
+    const supabaseUrl = 'https://your-supabase-url.supabase.co';
+    const supabaseKey = 'your-supabase-key';
+    window.supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    
+    // DOM Elements
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const conversationsList = document.getElementById('conversationsList');
+    const noConversationsMessage = document.getElementById('noConversationsMessage');
+    const messagesList = document.getElementById('messagesList');
+    const noMessagesPlaceholder = document.getElementById('noMessagesPlaceholder');
+    const messageInput = document.getElementById('messageInput');
+    const sendMessageBtn = document.getElementById('sendMessageBtn');
+    const messageInputContainer = document.getElementById('messageInputContainer');
+    const newConversationBtn = document.getElementById('newConversationBtn');
+    const conversationName = document.getElementById('conversationName');
+    const conversationStatus = document.getElementById('conversationStatus');
+    const conversationAvatar = document.getElementById('conversationAvatar');
+    const conversationMenuContainer = document.getElementById('conversationMenuContainer');
+    const logoutButton = document.getElementById('logoutButton');
+    const userAvatar = document.getElementById('userAvatar');
+    const userName = document.getElementById('userName');
+    const userEmail = document.getElementById('userEmail');
+    
+    // Modal Elements
+    const newConversationModal = new bootstrap.Modal(document.getElementById('newConversationModal'));
+    const participantsModal = new bootstrap.Modal(document.getElementById('participantsModal'));
+    const isGroupConversation = document.getElementById('isGroupConversation');
+    const conversationTitleContainer = document.getElementById('conversationTitleContainer');
+    const conversationTitle = document.getElementById('conversationTitle');
+    const participantSearch = document.getElementById('participantSearch');
+    const searchParticipantBtn = document.getElementById('searchParticipantBtn');
+    const searchResults = document.getElementById('searchResults');
+    const selectedParticipants = document.getElementById('selectedParticipants');
+    const createConversationBtn = document.getElementById('createConversationBtn');
+    const participantsList = document.getElementById('participantsList');
+    const viewParticipantsBtn = document.getElementById('viewParticipantsBtn');
+    const addParticipantBtn = document.getElementById('addParticipantBtn');
+    const editConversationBtn = document.getElementById('editConversationBtn');
+    const leaveConversationBtn = document.getElementById('leaveConversationBtn');
+    
+    // State
+    let currentUser = null;
+    let currentConversationId = null;
+    let conversations = [];
+    let messages = [];
+    let participants = [];
+    let selectedParticipantIds = [];
+    let messageSubscription = null;
+    let conversationSubscription = null;
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check user session
+      await checkUserSession();
+      
+      // Load conversations
+      await loadConversations();
+      
+      // Subscribe to new conversations
+      subscribeToNewConversations();
+      
+      // Event listeners
+      setupEventListeners();
+    });
+    
+    // Check if user is logged in
+    async function checkUserSession() {
+      const { data: { session } } = await window.supabase.auth.getSession();
+      
+      if (!session) {
+        // Redirect to login page if not logged in
+        window.location.href = 'giris.html';
+        return;
+      }
+      
+      currentUser = session.user;
+      
+      // Get user profile
+      const { data: profile } = await window.supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+      
+      if (profile) {
+        // Update UI with user info
+        userName.textContent = profile.username || profile.full_name || 'Kullanıcı';
+        userEmail.textContent = currentUser.email;
+        
+        if (profile.avatar_url) {
+          userAvatar.innerHTML = `<img src="${profile.avatar_url}" alt="${profile.username}">`;
+        } else {
+          const initials = (profile.username || profile.full_name || 'Kullanıcı').substring(0, 2).toUpperCase();
+          userAvatar.textContent = initials;
+        }
+      }
+    }
+    
+    // Load conversations
+    async function loadConversations() {
+      try {
+        conversations = await window.messagingApi.getConversations();
+        
+        renderConversationsList();
+      } catch (error) {
+        console.error('Konuşmalar yüklenirken hata oluştu:', error.message);
+        showAlert('Konuşmalar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.', 'error');
+      }
+    }
+    
+    // Render conversations list
+    function renderConversationsList() {
+      conversationsList.innerHTML = '';
+      
+      if (conversations.length === 0) {
+        noConversationsMessage.style.display = 'block';
+        return;
+      }
+      
+      noConversationsMessage.style.display = 'none';
+      
+      conversations.forEach(conversation => {
+        const conversationItem = document.createElement('a');
+        conversationItem.href = '#';
+        conversationItem.className = 'list-group-item list-group-item-action d-flex align-items-center gap-3 py-3';
+        conversationItem.dataset.id = conversation.id;
+        
+        if (currentConversationId === conversation.id) {
+          conversationItem.classList.add('active');
+        }
+        
+        let avatarContent = '';
+        let conversationTitle = '';
+        
+        if (conversation.is_group) {
+          avatarContent = '<i class="fas fa-users"></i>';
+          conversationTitle = conversation.title || 'Grup Konuşması';
+        } else {
+          // For direct conversations, show the other person's info
+          window.supabase
+            .from('conversation_members')
+            .select('*')
+            .eq('conversation_id', conversation.id)
+            .neq('profile_id', currentUser.id)
+            .then(({ data }) => {
+              if (data && data.length > 0) {
+                const otherUser = data[0];
+                conversationItem.querySelector('.conversation-name').textContent = otherUser.username || otherUser.full_name || 'Kullanıcı';
+                
+                if (otherUser.avatar_url) {
+                  conversationItem.querySelector('.avatar').innerHTML = `<img src="${otherUser.avatar_url}" alt="${otherUser.username}">`;
+                } else {
+                  const initials = (otherUser.username || otherUser.full_name || 'Kullanıcı').substring(0, 2).toUpperCase();
+                  conversationItem.querySelector('.avatar').textContent = initials;
+                }
+              }
+            });
+          
+          avatarContent = 'LD';
+          conversationTitle = 'Yükleniyor...';
+        }
+        
+        const unreadBadge = conversation.unread_count > 0 
+          ? `<span class="badge badge-primary ms-auto">${conversation.unread_count}</span>` 
+          : '';
+        
+        conversationItem.innerHTML = `
+          <div class="avatar">${avatarContent}</div>
+          <div class="flex-grow-1 overflow-hidden">
+            <div class="d-flex align-items-center">
+              <div class="conversation-name fw-medium text-truncate">${conversationTitle}</div>
+              ${unreadBadge}
+            </div>
+            <div class="small text-truncate text-muted">
+              ${conversation.latest_message_content || 'Henüz mesaj yok'}
+            </div>
+          </div>
+          <div class="text-muted small">
+            ${conversation.latest_message_time ? formatDate(new Date(conversation.latest_message_time)) : ''}
+          </div>
+        `;
+        
+        conversationItem.addEventListener('click', (e) => {
+          e.preventDefault();
+          selectConversation(conversation.id);
+        });
+        
+        conversationsList.appendChild(conversationItem);
+      });
+    }
+    
+    // Select a conversation
+    async function selectConversation(conversationId) {
+      // Unsubscribe from previous conversation messages
+      if (messageSubscription) {
+        messageSubscription.unsubscribe();
+      }
+      
+      currentConversationId = conversationId;
+      
+      // Update UI
+      document.querySelectorAll('#conversationsList .list-group-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.id === conversationId) {
+          item.classList.add('active');
+          // Remove unread badge if exists
+          const badge = item.querySelector('.badge');
+          if (badge) badge.remove();
+        }
+      });
+      
+      // Show message input
+      messageInputContainer.style.display = 'flex';
+      conversationMenuContainer.style.display = 'block';
+      
+      try {
+        // Get conversation details
+        const conversation = await window.messagingApi.getConversationDetails(conversationId);
+        
+        // Get conversation participants
+        participants = await window.messagingApi.getConversationParticipants(conversationId);
+        
+        // Update conversation header
+        updateConversationHeader(conversation);
+        
+        // Load messages
+        await loadMessages(conversationId);
+        
+        // Subscribe to new messages
+        subscribeToNewMessages(conversationId);
+      } catch (error) {
+        console.error('Konuşma yüklenirken hata oluştu:', error.message);
+        showAlert('Konuşma yüklenirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+      }
+    }
+    
+    // Update conversation header
+    function updateConversationHeader(conversation) {
+      if (conversation.is_group) {
+        conversationName.textContent = conversation.title || 'Grup Konuşması';
+        conversationAvatar.innerHTML = '<i class="fas fa-users"></i>';
+        conversationStatus.textContent = `${participants.length} katılımcı`;
+      } else {
+        // For direct conversations, show the other person's info
+        const otherParticipant = participants.find(p => p.profile_id !== currentUser.id);
+        
+        if (otherParticipant) {
+          conversationName.textContent = otherParticipant.username || otherParticipant.full_name || 'Kullanıcı';
+          
+          if (otherParticipant.avatar_url) {
+            conversationAvatar.innerHTML = `<img src="${otherParticipant.avatar_url}" alt="${otherParticipant.username}">`;
+          } else {
+            const initials = (otherParticipant.username || otherParticipant.full_name || 'Kullanıcı').substring(0, 2).toUpperCase();
+            conversationAvatar.textContent = initials;
+          }
+          
+          conversationStatus.textContent = 'Çevrimiçi'; // This could be dynamic based on user status
+        } else {
+          conversationName.textContent = 'Konuşma';
+          conversationAvatar.textContent = 'LD';
+          conversationStatus.textContent = '';
+        }
+      }
+    }
+    
+    // Load messages
+    async function loadMessages(conversationId) {
+      try {
+        messages = await window.messagingApi.getMessages(conversationId);
+        
+        renderMessagesList();
+      } catch (error) {
+        console.error('Mesajlar yüklenirken hata oluştu:', error.message);
+        showAlert('Mesajlar yüklenirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+      }
+    }
+    
+    // Render messages list
+    function renderMessagesList() {
+      messagesList.innerHTML = '';
+      
+      if (messages.length === 0) {
+        messagesList.innerHTML = `
+          <div class="text-center py-4 text-muted">
+            <i class="fas fa-comments fa-2x mb-2"></i>
+            <p>Henüz mesaj bulunmuyor</p>
+            <p class="small">İlk mesajı göndermek için aşağıdaki metin kutusunu kullanın</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Sort messages by date (oldest first)
+      messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      
+      messages.forEach(message => {
+        const isSent = message.sender_id === currentUser.id;
+        const messageItem = document.createElement('div');
+        messageItem.className = `chat-message ${isSent ? 'chat-message-sent' : 'chat-message-received'}`;
+        messageItem.dataset.id = message.id;
+        
+        let senderName = '';
+        if (!isSent && participants) {
+          const sender = participants.find(p => p.profile_id === message.sender_id);
+          if (sender) {
+            senderName = `<div class="small fw-medium mb-1">${sender.username || sender.full_name || 'Kullanıcı'}</div>`;
+          }
+        }
+        
+        const messageContent = message.is_deleted 
+          ? '<em class="text-muted">Bu mesaj silindi</em>' 
+          : message.content;
+        
+        const editedBadge = message.is_edited && !message.is_deleted 
+          ? '<span class="small ms-1 text-muted">(düzenlendi)</span>' 
+          : '';
+        
+        messageItem.innerHTML = `
+          ${!isSent ? senderName : ''}
+          <div>${messageContent}${editedBadge}</div>
+          <div class="chat-message-time">${formatTime(new Date(message.created_at))}</div>
+        `;
+        
+        // Add context menu for sent messages
+        if (isSent && !message.is_deleted) {
+          messageItem.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            showMessageContextMenu(e, message.id);
+          });
+        }
+        
+        messagesList.appendChild(messageItem);
+      });
+      
+      // Scroll to bottom
+      messagesList.scrollTop = messagesList.scrollHeight;
+    }
+    
+    // Send a message
+    async function sendMessage() {
+      const content = messageInput.value.trim();
+      
+      if (!content || !currentConversationId) return;
+      
+      try {
+        messageInput.value = '';
+        
+        await window.messagingApi.sendMessage(currentConversationId, content);
+        
+        // No need to manually add the message to the UI as we're subscribed to new messages
+      } catch (error) {
+        console.error('Mesaj gönderilirken hata oluştu:', error.message);
+        showAlert('Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+      }
+    }
+    
+    // Subscribe to new messages
+    function subscribeToNewMessages(conversationId) {
+      messageSubscription = window.messagingApi.subscribeToMessages(conversationId, (newMessage, action) => {
+        if (action === 'insert') {
+          // Add new message to the list
+          messages.push(newMessage);
+          renderMessagesList();
+          
+          // Mark as read if it's not from current user
+          if (newMessage.sender_id !== currentUser.id) {
+            window.messagingApi.markMessagesAsRead([newMessage.id]);
+          }
+        } else if (action === 'update') {
+          // Update existing message
+          const index = messages.findIndex(m => m.id === newMessage.id);
+          if (index !== -1) {
+            messages[index] = newMessage;
+            renderMessagesList();
+          }
+        }
+      });
+    }
+    
+    // Subscribe to new conversations
+    function subscribeToNewConversations() {
+      conversationSubscription = window.messagingApi.subscribeToConversations((newConversation, action) => {
+        if (action === 'insert') {
+          // Add new conversation to the list
+          conversations.unshift(newConversation);
+          renderConversationsList();
+        }
+      });
+    }
+    
+    // Create a new conversation
+    async function createNewConversation() {
+      const isGroup = isGroupConversation.checked;
+      const title = isGroup ? conversationTitle.value.trim() : null;
+      
+      if (isGroup && !title) {
+        showAlert('Lütfen grup konuşması için bir başlık girin.', 'warning');
+        return;
+      }
+      
+      if (selectedParticipantIds.length === 0) {
+        showAlert('Lütfen en az bir katılımcı seçin.', 'warning');
+        return;
+      }
+      
+      try {
+        const conversation = await window.messagingApi.createConversation(title, isGroup, selectedParticipantIds);
+        
+        // Close modal
+        newConversationModal.hide();
+        
+        // Reset form
+        resetNewConversationForm();
+        
+        // Select the new conversation
+        await loadConversations();
+        selectConversation(conversation.id);
+      } catch (error) {
+        console.error('Konuşma oluşturulurken hata oluştu:', error.message);
+        showAlert('Konuşma oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+      }
+    }
+    
+    // Reset new conversation form
+    function resetNewConversationForm() {
+      isGroupConversation.checked = false;
+      conversationTitle.value = '';
+      conversationTitleContainer.style.display = 'none';
+      participantSearch.value = '';
+      searchResults.innerHTML = '';
+      searchResults.style.display = 'none';
+      selectedParticipants.innerHTML = '';
+      selectedParticipantIds = [];
+    }
+    
+    // Search for users
+    async function searchUsers() {
+      const query = participantSearch.value.trim();
+      
+      if (!query) {
+        searchResults.innerHTML = '';
+        searchResults.style.display = 'none';
+        return;
+      }
+      
+      try {
+        const { data, error } = await window.supabase
+          .from('profiles')
+          .select('id, username, full_name, avatar_url')
+          .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`)
+          .neq('id', currentUser.id)
+          .limit(10);
+        
+        if (error) throw error;
+        
+        renderSearchResults(data);
+      } catch (error) {
+        console.error('Kullanıcılar aranırken hata oluştu:', error.message);
+        showAlert('Kullanıcılar aranırken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+      }
+    }
+    
+    // Render search results
+    function renderSearchResults(users) {
+      searchResults.innerHTML = '';
+      
+      if (users.length === 0) {
+        searchResults.innerHTML = `
+          <div class="list-group-item text-center text-muted">
+            <i class="fas fa-user-slash me-2"></i>
+            Kullanıcı bulunamadı
+          </div>
+        `;
+        searchResults.style.display = 'block';
+        return;
+      }
+      
+      users.forEach(user => {
+        // Skip if already selected
+        if (selectedParticipantIds.includes(user.id)) return;
+        
+        const userItem = document.createElement('a');
+        userItem.href = '#';
+        userItem.className = 'list-group-item list-group-item-action d-flex align-items-center gap-2';
+        
+        let avatarContent = '';
+        if (user.avatar_url) {
+          avatarContent = `<img src="${user.avatar_url}" alt="${user.username}">`;
+        } else {
+          const initials = (user.username || user.full_name || 'Kullanıcı').substring(0, 2).toUpperCase();
+          avatarContent = initials;
+        }
+        
+        userItem.innerHTML = `
+          <div class="avatar avatar-sm">${avatarContent}</div>
+          <div>
+            <div class="fw-medium">${user.username || 'Kullanıcı'}</div>
+            <div class="small text-muted">${user.full_name || ''}</div>
+          </div>
+        `;
+        
+        userItem.addEventListener('click', (e) => {
+          e.preventDefault();
+          addSelectedParticipant(user);
+          searchResults.style.display = 'none';
+          participantSearch.value = '';
+        });
+        
+        searchResults.appendChild(userItem);
+      });
+      
+      searchResults.style.display = 'block';
+    }
+    
+    // Add selected participant
+    function addSelectedParticipant(user) {
+      if (selectedParticipantIds.includes(user.id)) return;
+      
+      selectedParticipantIds.push(user.id);
+      
+      const participantBadge = document.createElement('div');
+      participantBadge.className = 'badge bg-primary d-flex align-items-center gap-2';
+      participantBadge.dataset.id = user.id;
+      
+      let avatarContent = '';
+      if (user.avatar_url) {
+        avatarContent = `<img src="${user.avatar_url}" alt="${user.username}" style="width: 16px; height: 16px; border-radius: 50%;">`;  
+      } else {
+        avatarContent = (user.username || user.full_name || 'Kullanıcı').substring(0, 1).toUpperCase();
+      }
+      
+      participantBadge.innerHTML = `
+        <span>${avatarContent}</span>
+        <span>${user.username || user.full_name || 'Kullanıcı'}</span>
+        <button type="button" class="btn-close btn-close-white ms-1" style="font-size: 0.5rem;"></button>
+      `;
+      
+      participantBadge.querySelector('.btn-close').addEventListener('click', () => {
+        removeSelectedParticipant(user.id);
+      });
+      
+      selectedParticipants.appendChild(participantBadge);
+    }
+    
+    // Remove selected participant
+    function removeSelectedParticipant(userId) {
+      selectedParticipantIds = selectedParticipantIds.filter(id => id !== userId);
+      
+      const participantBadge = selectedParticipants.querySelector(`[data-id="${userId}"]`);
+      if (participantBadge) {
+        participantBadge.remove();
+      }
+    }
+    
+    // Show participants modal
+    async function showParticipantsModal() {
+      if (!currentConversationId) return;
+      
+      try {
+        participants = await window.messagingApi.getConversationParticipants(currentConversationId);
+        
+        renderParticipantsList();
+        participantsModal.show();
+      } catch (error) {
+        console.error('Katılımcılar getirilirken hata oluştu:', error.message);
+        showAlert('Katılımcılar getirilirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+      }
+    }
+    
+    // Render participants list
+    function renderParticipantsList() {
+      participantsList.innerHTML = '';
+      
+      if (!participants || participants.length === 0) {
+        participantsList.innerHTML = `
+          <li class="list-group-item text-center text-muted">
+            <i class="fas fa-users-slash me-2"></i>
+            Katılımcı bulunamadı
+          </li>
+        `;
+        return;
+      }
+      
+      // Find if current user is admin
+      const isCurrentUserAdmin = participants.some(p => p.profile_id === currentUser.id && p.is_admin);
+      
+      participants.forEach(participant => {
+        const participantItem = document.createElement('li');
+        participantItem.className = 'list-group-item d-flex align-items-center justify-content-between';
+        
+        let avatarContent = '';
+        if (participant.avatar_url) {
+          avatarContent = `<img src="${participant.avatar_url}" alt="${participant.username}">`;
+        } else {
+          const initials = (participant.username || participant.full_name || 'Kullanıcı').substring(0, 2).toUpperCase();
+          avatarContent = initials;
+        }
+        
+        const isCurrentUser = participant.profile_id === currentUser.id;
+        const adminBadge = participant.is_admin 
+          ? '<span class="badge badge-secondary ms-2">Admin</span>' 
+          : '';
+        const youBadge = isCurrentUser 
+          ? '<span class="badge badge-primary ms-2">Sen</span>' 
+          : '';
+        
+        let actionButton = '';
+        if (isCurrentUserAdmin && !isCurrentUser) {
+          actionButton = `
+            <button class="btn btn-sm btn-outline-danger remove-participant-btn" data-id="${participant.profile_id}">
+              <i class="fas fa-times"></i>
+            </button>
+          `;
+        }
+        
+        participantItem.innerHTML = `
+          <div class="d-flex align-items-center gap-2">
+            <div class="avatar avatar-sm">${avatarContent}</div>
+            <div>
+              <div class="fw-medium">${participant.username || 'Kullanıcı'}${adminBadge}${youBadge}</div>
+              <div class="small text-muted">${participant.full_name || ''}</div>
+            </div>
+          </div>
+          ${actionButton}
+        `;
+        
+        if (actionButton) {
+          participantItem.querySelector('.remove-participant-btn').addEventListener('click', () => {
+            removeParticipant(participant.profile_id);
+          });
+        }
+        
+        participantsList.appendChild(participantItem);
+      });
+    }
+    
+    // Remove participant
+    async function removeParticipant(profileId) {
+      if (!currentConversationId) return;
+      
+      try {
+        await window.messagingApi.removeParticipantFromConversation(currentConversationId, profileId);
+        
+        // Update participants list
+        participants = participants.filter(p => p.profile_id !== profileId);
+        renderParticipantsList();
+        
+        showAlert('Katılımcı başarıyla çıkarıldı.', 'success');
+      } catch (error) {
+        console.error('Katılımcı çıkarılırken hata oluştu:', error.message);
+        showAlert('Katılımcı çıkarılırken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+      }
+    }
+    
+    // Leave conversation
+    async function leaveConversation() {
+      if (!currentConversationId) return;
+      
+      if (!confirm('Bu konuşmadan ayrılmak istediğinize emin misiniz?')) return;
+      
+      try {
+        await window.messagingApi.removeParticipantFromConversation(currentConversationId, currentUser.id);
+        
+        // Close modal if open
+        if (participantsModal._isShown) {
+          participantsModal.hide();
+        }
+        
+        // Reset current conversation
+        currentConversationId = null;
+        messageInputContainer.style.display = 'none';
+        conversationMenuContainer.style.display = 'none';
+        conversationName.textContent = 'Konuşma seçilmedi';
+        conversationStatus.textContent = 'Lütfen bir konuşma seçin';
+        conversationAvatar.textContent = 'LD';
+        messagesList.innerHTML = '';
+        noMessagesPlaceholder.style.display = 'flex';
+        
+        // Reload conversations
+        await loadConversations();
+        
+        showAlert('Konuşmadan başarıyla ayrıldınız.', 'success');
+      } catch (error) {
+        console.error('Konuşmadan ayrılırken hata oluştu:', error.message);
+        showAlert('Konuşmadan ayrılırken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+      }
+    }
+    
+    // Show message context menu
+    function showMessageContextMenu(event, messageId) {
+      // Remove existing context menu
+      const existingMenu = document.querySelector('.message-context-menu');
+      if (existingMenu) {
+        existingMenu.remove();
+      }
+      
+      // Create context menu
+      const contextMenu = document.createElement('div');
+      contextMenu.className = 'message-context-menu card shadow-sm position-absolute';
+      contextMenu.style.left = `${event.pageX}px`;
+      contextMenu.style.top = `${event.pageY}px`;
+      contextMenu.style.zIndex = '1000';
+      contextMenu.style.minWidth = '150px';
+      
+      contextMenu.innerHTML = `
+        <div class="list-group list-group-flush">
+          <a href="#" class="list-group-item list-group-item-action edit-message-btn">
+            <i class="fas fa-edit me-2"></i> Düzenle
+          </a>
+          <a href="#" class="list-group-item list-group-item-action delete-message-btn text-danger">
+            <i class="fas fa-trash me-2"></i> Sil
+          </a>
+        </div>
+      `;
+      
+      // Add event listeners
+      contextMenu.querySelector('.edit-message-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        editMessage(messageId);
+        contextMenu.remove();
+      });
+      
+      contextMenu.querySelector('.delete-message-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        deleteMessage(messageId);
+        contextMenu.remove();
+      });
+      
+      // Close menu when clicking outside
+      document.addEventListener('click', function closeMenu(e) {
+        if (!contextMenu.contains(e.target)) {
+          contextMenu.remove();
+          document.removeEventListener('click', closeMenu);
+        }
+      });
+      
+      // Add to DOM
+      document.body.appendChild(contextMenu);
+    }
+    
+    // Edit message
+    function editMessage(messageId) {
+      const message = messages.find(m => m.id === messageId);
+      if (!message) return;
+      
+      const newContent = prompt('Mesajı düzenle:', message.content);
+      if (newContent === null || newContent.trim() === message.content) return;
+      
+      if (newContent.trim() === '') {
+        showAlert('Mesaj boş olamaz.', 'warning');
+        return;
+      }
+      
+      window.messagingApi.editMessage(messageId, newContent.trim())
+        .catch(error => {
+          console.error('Mesaj düzenlenirken hata oluştu:', error.message);
+          showAlert('Mesaj düzenlenirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+        });
+    }
+    
+    // Delete message
+    function deleteMessage(messageId) {
+      if (!confirm('Bu mesajı silmek istediğinize emin misiniz?')) return;
+      
+      window.messagingApi.deleteMessage(messageId)
+        .catch(error => {
+          console.error('Mesaj silinirken hata oluştu:', error.message);
+          showAlert('Mesaj silinirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+        });
+    }
+    
+    // Setup event listeners
+    function setupEventListeners() {
+      // Sidebar toggle
+      sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+      
+      // Send message
+      sendMessageBtn.addEventListener('click', sendMessage);
+      
+      // Send message on Enter key
+      messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      // New conversation button
+      newConversationBtn.addEventListener('click', () => {
+        resetNewConversationForm();
+        newConversationModal.show();
+      });
+      
+      // Group conversation checkbox
+      isGroupConversation.addEventListener('change', () => {
+        conversationTitleContainer.style.display = isGroupConversation.checked ? 'block' : 'none';
+      });
+      
+      // Search participant
+      searchParticipantBtn.addEventListener('click', searchUsers);
+      
+      participantSearch.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+          searchUsers();
+        }
+      });
+      
+      // Create conversation button
+      createConversationBtn.addEventListener('click', createNewConversation);
+      
+      // View participants button
+      viewParticipantsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showParticipantsModal();
+      });
+      
+      // Leave conversation button
+      leaveConversationBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        leaveConversation();
+      });
+      
+      // Logout button
+      logoutButton.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        try {
+          await window.supabase.auth.signOut();
+          window.location.href = 'giris.html';
+        } catch (error) {
+          console.error('Çıkış yapılırken hata oluştu:', error.message);
+          showAlert('Çıkış yapılırken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+        }
+      });
+    }
+    
+    // Helper functions
+    
+    // Format date
+    function formatDate(date) {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      if (date >= today) {
+        return formatTime(date);
+      } else if (date >= yesterday) {
+        return 'Dün';
+      } else {
+        return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+      }
+    }
+    
+    // Format time
+    function formatTime(date) {
+      return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    // Show alert
+    function showAlert(message, type = 'info') {
+      // Create alert element
+      const alertElement = document.createElement('div');
+      alertElement.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+      alertElement.style.zIndex = '9999';
+      alertElement.style.maxWidth = '400px';
+      
+      alertElement.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+      `;
+      
+      // Add to DOM
+      document.body.appendChild(alertElement);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        alertElement.classList.remove('show');
+        setTimeout(() => alertElement.remove(), 300);
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

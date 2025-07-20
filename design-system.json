@@ -1,0 +1,659 @@
+{
+  "name": "Lise Defteri Design System",
+  "version": "1.0.0",
+  "description": "Modern, mavi-beyaz dashboard tasarımı için tasarım sistemi",
+  "colors": {
+    "primary": {
+      "50": "#e3f2fd",
+      "100": "#bbdefb",
+      "200": "#90caf9",
+      "300": "#64b5f6",
+      "400": "#42a5f5",
+      "500": "#2196f3",
+      "600": "#1e88e5",
+      "700": "#1976d2",
+      "800": "#1565c0",
+      "900": "#0d47a1"
+    },
+    "secondary": {
+      "50": "#e8eaf6",
+      "100": "#c5cae9",
+      "200": "#9fa8da",
+      "300": "#7986cb",
+      "400": "#5c6bc0",
+      "500": "#3f51b5",
+      "600": "#3949ab",
+      "700": "#303f9f",
+      "800": "#283593",
+      "900": "#1a237e"
+    },
+    "success": {
+      "50": "#e8f5e9",
+      "100": "#c8e6c9",
+      "200": "#a5d6a7",
+      "300": "#81c784",
+      "400": "#66bb6a",
+      "500": "#4caf50",
+      "600": "#43a047",
+      "700": "#388e3c",
+      "800": "#2e7d32",
+      "900": "#1b5e20"
+    },
+    "error": {
+      "50": "#ffebee",
+      "100": "#ffcdd2",
+      "200": "#ef9a9a",
+      "300": "#e57373",
+      "400": "#ef5350",
+      "500": "#f44336",
+      "600": "#e53935",
+      "700": "#d32f2f",
+      "800": "#c62828",
+      "900": "#b71c1c"
+    },
+    "warning": {
+      "50": "#fff8e1",
+      "100": "#ffecb3",
+      "200": "#ffe082",
+      "300": "#ffd54f",
+      "400": "#ffca28",
+      "500": "#ffc107",
+      "600": "#ffb300",
+      "700": "#ffa000",
+      "800": "#ff8f00",
+      "900": "#ff6f00"
+    },
+    "neutral": {
+      "50": "#fafafa",
+      "100": "#f5f5f5",
+      "200": "#eeeeee",
+      "300": "#e0e0e0",
+      "400": "#bdbdbd",
+      "500": "#9e9e9e",
+      "600": "#757575",
+      "700": "#616161",
+      "800": "#424242",
+      "900": "#212121"
+    },
+    "background": {
+      "light": "#ffffff",
+      "dark": "#f5f7fa",
+      "sidebar": "#1a2f5a"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+      "secondary": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+      "monospace": "'Roboto Mono', 'SF Mono', 'Courier New', Courier, monospace"
+    },
+    "fontWeight": {
+      "light": 300,
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "fontSize": {
+      "xs": "0.75rem",
+      "sm": "0.875rem",
+      "base": "1rem",
+      "lg": "1.125rem",
+      "xl": "1.25rem",
+      "2xl": "1.5rem",
+      "3xl": "1.875rem",
+      "4xl": "2.25rem",
+      "5xl": "3rem"
+    },
+    "lineHeight": {
+      "none": 1,
+      "tight": 1.25,
+      "snug": 1.375,
+      "normal": 1.5,
+      "relaxed": 1.625,
+      "loose": 2
+    },
+    "letterSpacing": {
+      "tighter": "-0.05em",
+      "tight": "-0.025em",
+      "normal": "0",
+      "wide": "0.025em",
+      "wider": "0.05em",
+      "widest": "0.1em"
+    }
+  },
+  "spacing": {
+    "0": "0",
+    "1": "0.25rem",
+    "2": "0.5rem",
+    "3": "0.75rem",
+    "4": "1rem",
+    "5": "1.25rem",
+    "6": "1.5rem",
+    "8": "2rem",
+    "10": "2.5rem",
+    "12": "3rem",
+    "16": "4rem",
+    "20": "5rem",
+    "24": "6rem",
+    "32": "8rem",
+    "40": "10rem",
+    "48": "12rem",
+    "56": "14rem",
+    "64": "16rem"
+  },
+  "borderRadius": {
+    "none": "0",
+    "sm": "0.125rem",
+    "default": "0.25rem",
+    "md": "0.375rem",
+    "lg": "0.5rem",
+    "xl": "0.75rem",
+    "2xl": "1rem",
+    "3xl": "1.5rem",
+    "full": "9999px"
+  },
+  "shadows": {
+    "none": "none",
+    "xs": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    "sm": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+    "default": "0 2px 4px 0 rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.06)",
+    "md": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    "lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    "xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    "2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    "inner": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)"
+  },
+  "components": {
+    "button": {
+      "variants": {
+        "primary": {
+          "backgroundColor": "colors.primary.600",
+          "color": "colors.neutral.50",
+          "hoverBackgroundColor": "colors.primary.700",
+          "activeBackgroundColor": "colors.primary.800",
+          "borderRadius": "borderRadius.md",
+          "fontWeight": "typography.fontWeight.medium",
+          "padding": "spacing.3 spacing.6",
+          "fontSize": "typography.fontSize.base",
+          "boxShadow": "shadows.sm"
+        },
+        "secondary": {
+          "backgroundColor": "colors.neutral.100",
+          "color": "colors.neutral.800",
+          "hoverBackgroundColor": "colors.neutral.200",
+          "activeBackgroundColor": "colors.neutral.300",
+          "borderRadius": "borderRadius.md",
+          "fontWeight": "typography.fontWeight.medium",
+          "padding": "spacing.3 spacing.6",
+          "fontSize": "typography.fontSize.base",
+          "boxShadow": "shadows.sm"
+        },
+        "outline": {
+          "backgroundColor": "transparent",
+          "color": "colors.primary.600",
+          "borderColor": "colors.primary.600",
+          "borderWidth": "1px",
+          "hoverBackgroundColor": "colors.primary.50",
+          "activeBackgroundColor": "colors.primary.100",
+          "borderRadius": "borderRadius.md",
+          "fontWeight": "typography.fontWeight.medium",
+          "padding": "spacing.3 spacing.6",
+          "fontSize": "typography.fontSize.base"
+        },
+        "text": {
+          "backgroundColor": "transparent",
+          "color": "colors.primary.600",
+          "hoverColor": "colors.primary.700",
+          "activeColor": "colors.primary.800",
+          "fontWeight": "typography.fontWeight.medium",
+          "padding": "spacing.2 spacing.4",
+          "fontSize": "typography.fontSize.base"
+        }
+      },
+      "sizes": {
+        "xs": {
+          "fontSize": "typography.fontSize.xs",
+          "padding": "spacing.1 spacing.2",
+          "borderRadius": "borderRadius.sm"
+        },
+        "sm": {
+          "fontSize": "typography.fontSize.sm",
+          "padding": "spacing.2 spacing.4",
+          "borderRadius": "borderRadius.sm"
+        },
+        "md": {
+          "fontSize": "typography.fontSize.base",
+          "padding": "spacing.3 spacing.6",
+          "borderRadius": "borderRadius.md"
+        },
+        "lg": {
+          "fontSize": "typography.fontSize.lg",
+          "padding": "spacing.4 spacing.8",
+          "borderRadius": "borderRadius.md"
+        },
+        "xl": {
+          "fontSize": "typography.fontSize.xl",
+          "padding": "spacing.5 spacing.10",
+          "borderRadius": "borderRadius.lg"
+        }
+      }
+    },
+    "card": {
+      "default": {
+        "backgroundColor": "colors.background.light",
+        "borderRadius": "borderRadius.lg",
+        "boxShadow": "shadows.md",
+        "padding": "spacing.6"
+      },
+      "variants": {
+        "elevated": {
+          "backgroundColor": "colors.background.light",
+          "borderRadius": "borderRadius.lg",
+          "boxShadow": "shadows.lg",
+          "padding": "spacing.6"
+        },
+        "outlined": {
+          "backgroundColor": "colors.background.light",
+          "borderRadius": "borderRadius.lg",
+          "borderWidth": "1px",
+          "borderColor": "colors.neutral.200",
+          "padding": "spacing.6"
+        },
+        "flat": {
+          "backgroundColor": "colors.background.dark",
+          "borderRadius": "borderRadius.lg",
+          "padding": "spacing.6"
+        }
+      }
+    },
+    "input": {
+      "default": {
+        "backgroundColor": "colors.background.light",
+        "borderWidth": "1px",
+        "borderColor": "colors.neutral.300",
+        "borderRadius": "borderRadius.md",
+        "padding": "spacing.3 spacing.4",
+        "fontSize": "typography.fontSize.base",
+        "lineHeight": "typography.lineHeight.normal",
+        "focusBorderColor": "colors.primary.500",
+        "focusRingColor": "colors.primary.100",
+        "focusRingWidth": "3px",
+        "placeholderColor": "colors.neutral.400"
+      },
+      "variants": {
+        "filled": {
+          "backgroundColor": "colors.neutral.100",
+          "borderWidth": "1px",
+          "borderColor": "colors.neutral.300",
+          "borderRadius": "borderRadius.md",
+          "padding": "spacing.3 spacing.4",
+          "fontSize": "typography.fontSize.base",
+          "lineHeight": "typography.lineHeight.normal",
+          "focusBorderColor": "colors.primary.500",
+          "focusRingColor": "colors.primary.100",
+          "focusRingWidth": "3px",
+          "placeholderColor": "colors.neutral.400"
+        },
+        "flushed": {
+          "backgroundColor": "transparent",
+          "borderWidth": "0",
+          "borderBottomWidth": "1px",
+          "borderColor": "colors.neutral.300",
+          "borderRadius": "0",
+          "padding": "spacing.3 spacing.1",
+          "fontSize": "typography.fontSize.base",
+          "lineHeight": "typography.lineHeight.normal",
+          "focusBorderColor": "colors.primary.500",
+          "focusRingColor": "transparent",
+          "placeholderColor": "colors.neutral.400"
+        }
+      },
+      "sizes": {
+        "sm": {
+          "fontSize": "typography.fontSize.sm",
+          "padding": "spacing.2 spacing.3",
+          "borderRadius": "borderRadius.sm"
+        },
+        "md": {
+          "fontSize": "typography.fontSize.base",
+          "padding": "spacing.3 spacing.4",
+          "borderRadius": "borderRadius.md"
+        },
+        "lg": {
+          "fontSize": "typography.fontSize.lg",
+          "padding": "spacing.4 spacing.5",
+          "borderRadius": "borderRadius.md"
+        }
+      }
+    },
+    "navbar": {
+      "default": {
+        "backgroundColor": "colors.background.light",
+        "boxShadow": "shadows.sm",
+        "padding": "spacing.4 spacing.6",
+        "height": "4rem"
+      },
+      "variants": {
+        "primary": {
+          "backgroundColor": "colors.primary.600",
+          "color": "colors.neutral.50",
+          "boxShadow": "shadows.md",
+          "padding": "spacing.4 spacing.6",
+          "height": "4rem"
+        },
+        "transparent": {
+          "backgroundColor": "transparent",
+          "boxShadow": "none",
+          "padding": "spacing.4 spacing.6",
+          "height": "4rem"
+        }
+      }
+    },
+    "sidebar": {
+      "default": {
+        "backgroundColor": "colors.background.sidebar",
+        "color": "colors.neutral.50",
+        "width": "16rem",
+        "padding": "spacing.6"
+      },
+      "item": {
+        "default": {
+          "padding": "spacing.3 spacing.4",
+          "borderRadius": "borderRadius.md",
+          "color": "colors.neutral.300",
+          "hoverBackgroundColor": "rgba(255, 255, 255, 0.1)",
+          "activeBackgroundColor": "rgba(255, 255, 255, 0.2)",
+          "activeColor": "colors.neutral.50",
+          "fontSize": "typography.fontSize.base",
+          "fontWeight": "typography.fontWeight.medium",
+          "marginBottom": "spacing.1"
+        }
+      }
+    },
+    "table": {
+      "default": {
+        "borderColor": "colors.neutral.200",
+        "borderWidth": "1px",
+        "borderRadius": "borderRadius.lg",
+        "overflow": "hidden"
+      },
+      "header": {
+        "backgroundColor": "colors.neutral.50",
+        "borderBottomColor": "colors.neutral.200",
+        "borderBottomWidth": "1px",
+        "padding": "spacing.4 spacing.6",
+        "fontSize": "typography.fontSize.sm",
+        "fontWeight": "typography.fontWeight.semibold",
+        "color": "colors.neutral.700",
+        "textTransform": "uppercase",
+        "letterSpacing": "typography.letterSpacing.wider"
+      },
+      "cell": {
+        "padding": "spacing.4 spacing.6",
+        "borderBottomColor": "colors.neutral.200",
+        "borderBottomWidth": "1px",
+        "fontSize": "typography.fontSize.base",
+        "color": "colors.neutral.800"
+      },
+      "row": {
+        "hoverBackgroundColor": "colors.neutral.50"
+      }
+    },
+    "badge": {
+      "variants": {
+        "primary": {
+          "backgroundColor": "colors.primary.100",
+          "color": "colors.primary.800",
+          "borderRadius": "borderRadius.full",
+          "padding": "spacing.1 spacing.3",
+          "fontSize": "typography.fontSize.xs",
+          "fontWeight": "typography.fontWeight.medium"
+        },
+        "secondary": {
+          "backgroundColor": "colors.secondary.100",
+          "color": "colors.secondary.800",
+          "borderRadius": "borderRadius.full",
+          "padding": "spacing.1 spacing.3",
+          "fontSize": "typography.fontSize.xs",
+          "fontWeight": "typography.fontWeight.medium"
+        },
+        "success": {
+          "backgroundColor": "colors.success.100",
+          "color": "colors.success.800",
+          "borderRadius": "borderRadius.full",
+          "padding": "spacing.1 spacing.3",
+          "fontSize": "typography.fontSize.xs",
+          "fontWeight": "typography.fontWeight.medium"
+        },
+        "error": {
+          "backgroundColor": "colors.error.100",
+          "color": "colors.error.800",
+          "borderRadius": "borderRadius.full",
+          "padding": "spacing.1 spacing.3",
+          "fontSize": "typography.fontSize.xs",
+          "fontWeight": "typography.fontWeight.medium"
+        },
+        "warning": {
+          "backgroundColor": "colors.warning.100",
+          "color": "colors.warning.800",
+          "borderRadius": "borderRadius.full",
+          "padding": "spacing.1 spacing.3",
+          "fontSize": "typography.fontSize.xs",
+          "fontWeight": "typography.fontWeight.medium"
+        }
+      }
+    },
+    "avatar": {
+      "default": {
+        "borderRadius": "borderRadius.full",
+        "backgroundColor": "colors.neutral.200",
+        "color": "colors.neutral.700",
+        "fontWeight": "typography.fontWeight.medium"
+      },
+      "sizes": {
+        "xs": {
+          "width": "1.5rem",
+          "height": "1.5rem",
+          "fontSize": "typography.fontSize.xs"
+        },
+        "sm": {
+          "width": "2rem",
+          "height": "2rem",
+          "fontSize": "typography.fontSize.sm"
+        },
+        "md": {
+          "width": "2.5rem",
+          "height": "2.5rem",
+          "fontSize": "typography.fontSize.base"
+        },
+        "lg": {
+          "width": "3rem",
+          "height": "3rem",
+          "fontSize": "typography.fontSize.lg"
+        },
+        "xl": {
+          "width": "4rem",
+          "height": "4rem",
+          "fontSize": "typography.fontSize.xl"
+        }
+      }
+    },
+    "modal": {
+      "overlay": {
+        "backgroundColor": "rgba(0, 0, 0, 0.4)"
+      },
+      "content": {
+        "backgroundColor": "colors.background.light",
+        "borderRadius": "borderRadius.lg",
+        "boxShadow": "shadows.xl",
+        "padding": "spacing.6",
+        "maxWidth": "28rem",
+        "margin": "0 auto"
+      },
+      "header": {
+        "marginBottom": "spacing.4",
+        "fontSize": "typography.fontSize.xl",
+        "fontWeight": "typography.fontWeight.bold",
+        "color": "colors.neutral.900"
+      },
+      "body": {
+        "marginBottom": "spacing.6",
+        "fontSize": "typography.fontSize.base",
+        "color": "colors.neutral.700"
+      },
+      "footer": {
+        "display": "flex",
+        "justifyContent": "flex-end",
+        "gap": "spacing.3"
+      }
+    },
+    "alert": {
+      "variants": {
+        "info": {
+          "backgroundColor": "colors.primary.50",
+          "borderColor": "colors.primary.500",
+          "borderLeftWidth": "4px",
+          "color": "colors.primary.900",
+          "padding": "spacing.4 spacing.6",
+          "borderRadius": "borderRadius.md"
+        },
+        "success": {
+          "backgroundColor": "colors.success.50",
+          "borderColor": "colors.success.500",
+          "borderLeftWidth": "4px",
+          "color": "colors.success.900",
+          "padding": "spacing.4 spacing.6",
+          "borderRadius": "borderRadius.md"
+        },
+        "warning": {
+          "backgroundColor": "colors.warning.50",
+          "borderColor": "colors.warning.500",
+          "borderLeftWidth": "4px",
+          "color": "colors.warning.900",
+          "padding": "spacing.4 spacing.6",
+          "borderRadius": "borderRadius.md"
+        },
+        "error": {
+          "backgroundColor": "colors.error.50",
+          "borderColor": "colors.error.500",
+          "borderLeftWidth": "4px",
+          "color": "colors.error.900",
+          "padding": "spacing.4 spacing.6",
+          "borderRadius": "borderRadius.md"
+        }
+      }
+    },
+    "tooltip": {
+      "default": {
+        "backgroundColor": "colors.neutral.800",
+        "color": "colors.neutral.50",
+        "borderRadius": "borderRadius.md",
+        "padding": "spacing.2 spacing.3",
+        "fontSize": "typography.fontSize.sm",
+        "maxWidth": "20rem",
+        "boxShadow": "shadows.lg"
+      }
+    },
+    "pagination": {
+      "default": {
+        "display": "flex",
+        "gap": "spacing.1"
+      },
+      "item": {
+        "default": {
+          "minWidth": "2.5rem",
+          "height": "2.5rem",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "borderRadius": "borderRadius.md",
+          "fontSize": "typography.fontSize.sm",
+          "fontWeight": "typography.fontWeight.medium",
+          "color": "colors.neutral.700",
+          "backgroundColor": "transparent",
+          "hoverBackgroundColor": "colors.neutral.100",
+          "activeBackgroundColor": "colors.primary.50",
+          "activeColor": "colors.primary.700"
+        }
+      }
+    },
+    "tabs": {
+      "default": {
+        "display": "flex",
+        "borderBottomWidth": "1px",
+        "borderBottomColor": "colors.neutral.200"
+      },
+      "tab": {
+        "default": {
+          "padding": "spacing.3 spacing.6",
+          "fontSize": "typography.fontSize.base",
+          "fontWeight": "typography.fontWeight.medium",
+          "color": "colors.neutral.600",
+          "borderBottomWidth": "2px",
+          "borderBottomColor": "transparent",
+          "hoverColor": "colors.neutral.900",
+          "activeColor": "colors.primary.600",
+          "activeBorderBottomColor": "colors.primary.600"
+        }
+      }
+    },
+    "messageChat": {
+      "container": {
+        "display": "flex",
+        "flexDirection": "column",
+        "height": "100%",
+        "backgroundColor": "colors.background.light",
+        "borderRadius": "borderRadius.lg",
+        "overflow": "hidden",
+        "boxShadow": "shadows.md"
+      },
+      "header": {
+        "padding": "spacing.4 spacing.6",
+        "borderBottomWidth": "1px",
+        "borderBottomColor": "colors.neutral.200",
+        "backgroundColor": "colors.background.light",
+        "display": "flex",
+        "alignItems": "center",
+        "gap": "spacing.3"
+      },
+      "messageList": {
+        "flex": "1",
+        "overflow": "auto",
+        "padding": "spacing.6",
+        "display": "flex",
+        "flexDirection": "column",
+        "gap": "spacing.4",
+        "backgroundColor": "colors.background.dark"
+      },
+      "messageItem": {
+        "sent": {
+          "alignSelf": "flex-end",
+          "backgroundColor": "colors.primary.500",
+          "color": "colors.neutral.50",
+          "borderRadius": "borderRadius.lg borderRadius.lg borderRadius.sm borderRadius.lg",
+          "padding": "spacing.3 spacing.4",
+          "maxWidth": "70%"
+        },
+        "received": {
+          "alignSelf": "flex-start",
+          "backgroundColor": "colors.background.light",
+          "color": "colors.neutral.800",
+          "borderRadius": "borderRadius.lg borderRadius.lg borderRadius.lg borderRadius.sm",
+          "padding": "spacing.3 spacing.4",
+          "maxWidth": "70%",
+          "boxShadow": "shadows.sm"
+        }
+      },
+      "inputArea": {
+        "padding": "spacing.4 spacing.6",
+        "borderTopWidth": "1px",
+        "borderTopColor": "colors.neutral.200",
+        "backgroundColor": "colors.background.light",
+        "display": "flex",
+        "gap": "spacing.3",
+        "alignItems": "center"
+      }
+    }
+  }
+}

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilim - Lise Defteri</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Lise Defteri</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="portfolyo.html">Portfolyo</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="forum.html">Forum</a></li>
+                    <!-- Auth links will be added dynamically by JavaScript -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="profile-section">
+            <div class="container">
+                <h1>Profilim</h1>
+                
+                <div class="loading-spinner" id="profile-loading">
+                    <div class="spinner"></div>
+                    <p>Profil bilgileri yükleniyor...</p>
+                </div>
+                
+                <div id="profile-error" class="error-message" style="display: none;">
+                    <p>Profil bilgileri yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.</p>
+                </div>
+                
+                <div id="not-logged-in" class="auth-message" style="display: none;">
+                    <p>Profil bilgilerinizi görüntülemek için lütfen <a href="giris.html">giriş yapın</a> veya <a href="kayit.html">kayıt olun</a>.</p>
+                </div>
+                
+                <div class="profile-container" id="profile-container" style="display: none;">
+                    <!-- Profil bilgileri JavaScript ile doldurulacak -->
+                </div>
+            </div>
+        </section>
+        
+        <section class="user-activity" id="user-activity" style="display: none;">
+            <div class="container">
+                <h2 class="section-title">Aktivitelerim</h2>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="topics">Konularım</button>
+                    <button class="tab-btn" data-tab="posts">Mesajlarım</button>
+                </div>
+                
+                <div class="tab-content">
+                    <div class="tab-pane active" id="topics-tab">
+                        <div class="loading-spinner" id="topics-loading">
+                            <div class="spinner"></div>
+                            <p>Konular yükleniyor...</p>
+                        </div>
+                        
+                        <div id="topics-error" class="error-message" style="display: none;">
+                            <p>Konular yüklenirken bir hata oluştu.</p>
+                        </div>
+                        
+                        <div id="user-topics" class="topics-list">
+                            <!-- Kullanıcının konuları JavaScript ile doldurulacak -->
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane" id="posts-tab">
+                        <div class="loading-spinner" id="posts-loading">
+                            <div class="spinner"></div>
+                            <p>Mesajlar yükleniyor...</p>
+                        </div>
+                        
+                        <div id="posts-error" class="error-message" style="display: none;">
+                            <p>Mesajlar yüklenirken bir hata oluştu.</p>
+                        </div>
+                        
+                        <div id="user-posts" class="posts-list">
+                            <!-- Kullanıcının mesajları JavaScript ile doldurulacak -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    <p>&copy; <span id="current-year"></span> Lise Defteri. Tüm hakları saklıdır.</p>
+                </div>
+                <div class="social-links">
+                    <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="#" target="_blank" rel="noopener noreferrer">Twitter</a>
+                    <a href="https://github.com/watashiwaconnie/lise-defteri.git" target="_blank" rel="noopener noreferrer">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Yıl bilgisini otomatik güncelle
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Supabase istemcisini başlat
+        const supabaseUrl = 'https://owwucdnfvzrwrqxseuyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93d3VjZG5mdnpyd3JxeHNldXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5NTc0ODEsImV4cCI6MjA2ODUzMzQ4MX0.ro_9mRz3QbSFOQc5Fse-qeuuFkHjWXJyaBbcFE47eI4';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // DOM elementleri
+        const profileLoading = document.getElementById('profile-loading');
+        const profileError = document.getElementById('profile-error');
+        const notLoggedIn = document.getElementById('not-logged-in');
+        const profileContainer = document.getElementById('profile-container');
+        const userActivity = document.getElementById('user-activity');
+        const topicsLoading = document.getElementById('topics-loading');
+        const topicsError = document.getElementById('topics-error');
+        const userTopics = document.getElementById('user-topics');
+        const postsLoading = document.getElementById('posts-loading');
+        const postsError = document.getElementById('posts-error');
+        const userPosts = document.getElementById('user-posts');
+        
+        // Sayfa yüklendiğinde çalışacak fonksiyonlar
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Kullanıcı oturum durumunu kontrol et ve profil bilgilerini yükle
+            await loadUserProfile();
+            
+            // Tab butonlarını dinle
+            setupTabs();
+        });
+        
+        // Kullanıcı profilini yükle
+        async function loadUserProfile() {
+            try {
+                profileLoading.style.display = 'flex';
+                profileContainer.style.display = 'none';
+                profileError.style.display = 'none';
+                notLoggedIn.style.display = 'none';
+                userActivity.style.display = 'none';
+                
+                // Mevcut kullanıcıyı kontrol et
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session) {
+                    // Kullanıcı giriş yapmamışsa giriş mesajını göster
+                    profileLoading.style.display = 'none';
+                    notLoggedIn.style.display = 'block';
+                    return;
+                }
+                
+                // Kullanıcı profilini al
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+                
+                if (profileError) {
+                    console.error('Profil yükleme hatası:', profileError.message);
+                    profileLoading.style.display = 'none';
+                    profileError.style.display = 'block';
+                    return;
+                }
+                
+                // Profil bilgilerini görüntüle
+                profileLoading.style.display = 'none';
+                profileContainer.innerHTML = `
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <img src="${profile.avatar_url || 'https://via.placeholder.com/150'}" alt="${profile.username}">
+                        </div>
+                        <div class="profile-info">
+                            <h2>${profile.full_name || 'İsimsiz Kullanıcı'}</h2>
+                            <p class="username">@${profile.username}</p>
+                            <p class="email">${session.user.email}</p>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <h3>Hakkımda</h3>
+                        <p>${profile.bio || 'Henüz bir biyografi eklenmemiş.'}</p>
+                    </div>
+                    <div class="profile-actions">
+                        <button id="edit-profile-btn" class="btn btn-primary">Profili Düzenle</button>
+                    </div>
+                `;
+                
+                profileContainer.style.display = 'block';
+                userActivity.style.display = 'block';
+                
+                // Profil düzenleme butonuna olay dinleyicisi ekle
+                document.getElementById('edit-profile-btn').addEventListener('click', openEditProfileForm);
+                
+                // Kullanıcının konularını ve mesajlarını yükle
+                loadUserTopics(session.user.id);
+                loadUserPosts(session.user.id);
+            } catch (error) {
+                console.error('Profil yükleme hatası:', error.message);
+                profileLoading.style.display = 'none';
+                profileError.style.display = 'block';
+            }
+        }
+        
+        // Profil düzenleme formunu aç
+        function openEditProfileForm() {
+            // Mevcut profil bilgilerini al
+            const fullName = document.querySelector('.profile-info h2').textContent;
+            const bio = document.querySelector('.profile-bio p').textContent;
+            const avatarUrl = document.querySelector('.profile-avatar img').src;
+            
+            // Profil düzenleme formunu oluştur
+            const formHTML = `
+                <div class="edit-profile-form">
+                    <h3>Profili Düzenle</h3>
+                    <div class="form-group">
+                        <label for="edit-full-name">Ad Soyad</label>
+                        <input type="text" id="edit-full-name" value="${fullName === 'İsimsiz Kullanıcı' ? '' : fullName}">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-bio">Hakkımda</label>
+                        <textarea id="edit-bio">${bio === 'Henüz bir biyografi eklenmemiş.' ? '' : bio}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-avatar">Profil Resmi URL</label>
+                        <input type="text" id="edit-avatar" value="${avatarUrl === 'https://via.placeholder.com/150' ? '' : avatarUrl}">
+                    </div>
+                    <div class="form-actions">
+                        <button id="save-profile-btn" class="btn btn-primary">Kaydet</button>
+                        <button id="cancel-edit-btn" class="btn btn-secondary">İptal</button>
+                    </div>
+                </div>
+            `;
+            
+            // Formu sayfaya ekle
+            profileContainer.innerHTML = formHTML;
+            
+            // Form butonlarına olay dinleyicileri ekle
+            document.getElementById('save-profile-btn').addEventListener('click', saveProfileChanges);
+            document.getElementById('cancel-edit-btn').addEventListener('click', loadUserProfile);
+        }
+        
+        // Profil değişikliklerini kaydet
+        async function saveProfileChanges() {
+            const fullName = document.getElementById('edit-full-name').value;
+            const bio = document.getElementById('edit-bio').value;
+            const avatarUrl = document.getElementById('edit-avatar').value;
+            
+            try {
+                // Mevcut kullanıcıyı kontrol et
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session) {
+                    console.error('Oturum hatası:', sessionError?.message || 'Kullanıcı oturumu bulunamadı');
+                    return;
+                }
+                
+                // Profil bilgilerini güncelle
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({
+                        full_name: fullName || null,
+                        bio: bio || null,
+                        avatar_url: avatarUrl || null
+                    })
+                    .eq('id', session.user.id);
+                
+                if (updateError) {
+                    console.error('Profil güncelleme hatası:', updateError.message);
+                    alert('Profil güncellenirken bir hata oluştu.');
+                    return;
+                }
+                
+                // Profil sayfasını yeniden yükle
+                loadUserProfile();
+            } catch (error) {
+                console.error('Profil güncelleme hatası:', error.message);
+                alert('Profil güncellenirken bir hata oluştu.');
+            }
+        }
+        
+        // Kullanıcının konularını yükle
+        async function loadUserTopics(userId) {
+            try {
+                topicsLoading.style.display = 'flex';
+                userTopics.style.display = 'none';
+                topicsError.style.display = 'none';
+                
+                // Kullanıcının konularını al
+                const { data: topics, error } = await supabase
+                    .from('forum_topics')
+                    .select(`
+                        id,
+                        title,
+                        content,
+                        created_at,
+                        view_count,
+                        forum_categories(id, name)
+                    `)
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Konu yükleme hatası:', error.message);
+                    topicsLoading.style.display = 'none';
+                    topicsError.style.display = 'block';
+                    return;
+                }
+                
+                // Konuları görüntüle
+                topicsLoading.style.display = 'none';
+                
+                if (!topics || topics.length === 0) {
+                    userTopics.innerHTML = '<p>Henüz konu açmamışsınız.</p>';
+                    userTopics.style.display = 'block';
+                    return;
+                }
+                
+                // Konu kartlarını oluştur
+                userTopics.innerHTML = '';
+                topics.forEach(topic => {
+                    // Tarih formatı
+                    const date = new Date(topic.created_at).toLocaleDateString('tr-TR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    
+                    const topicCard = document.createElement('div');
+                    topicCard.classList.add('topic-card');
+                    topicCard.innerHTML = `
+                        <div class="topic-info">
+                            <h3><a href="forum-konu.html?id=${topic.id}">${topic.title}</a></h3>
+                            <p class="topic-meta">Kategori: <span>${topic.forum_categories.name}</span> | Tarih: <span>${date}</span></p>
+                            <p class="topic-excerpt">${topic.content.substring(0, 150)}${topic.content.length > 150 ? '...' : ''}</p>
+                        </div>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="stat-value">${topic.view_count || 0}</span>
+                                <span class="stat-label">Görüntüleme</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    userTopics.appendChild(topicCard);
+                });
+                
+                userTopics.style.display = 'block';
+            } catch (error) {
+                console.error('Konu yükleme hatası:', error.message);
+                topicsLoading.style.display = 'none';
+                topicsError.style.display = 'block';
+            }
+        }
+        
+        // Kullanıcının mesajlarını yükle
+        async function loadUserPosts(userId) {
+            try {
+                postsLoading.style.display = 'flex';
+                userPosts.style.display = 'none';
+                postsError.style.display = 'none';
+                
+                // Kullanıcının mesajlarını al
+                const { data: posts, error } = await supabase
+                    .from('forum_posts')
+                    .select(`
+                        id,
+                        content,
+                        created_at,
+                        forum_topics(id, title)
+                    `)
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Mesaj yükleme hatası:', error.message);
+                    postsLoading.style.display = 'none';
+                    postsError.style.display = 'block';
+                    return;
+                }
+                
+                // Mesajları görüntüle
+                postsLoading.style.display = 'none';
+                
+                if (!posts || posts.length === 0) {
+                    userPosts.innerHTML = '<p>Henüz mesaj yazmamışsınız.</p>';
+                    userPosts.style.display = 'block';
+                    return;
+                }
+                
+                // Mesaj kartlarını oluştur
+                userPosts.innerHTML = '';
+                posts.forEach(post => {
+                    // Tarih formatı
+                    const date = new Date(post.created_at).toLocaleDateString('tr-TR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    
+                    const postCard = document.createElement('div');
+                    postCard.classList.add('post-card');
+                    postCard.innerHTML = `
+                        <div class="post-info">
+                            <h3>Konu: <a href="forum-konu.html?id=${post.forum_topics.id}">${post.forum_topics.title}</a></h3>
+                            <p class="post-meta">Tarih: <span>${date}</span></p>
+                            <div class="post-content">${post.content}</div>
+                        </div>
+                    `;
+                    
+                    userPosts.appendChild(postCard);
+                });
+                
+                userPosts.style.display = 'block';
+            } catch (error) {
+                console.error('Mesaj yükleme hatası:', error.message);
+                postsLoading.style.display = 'none';
+                postsError.style.display = 'block';
+            }
+        }
+        
+        // Tab butonlarını ayarla
+        function setupTabs() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Aktif tab butonunu değiştir
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Aktif tab içeriğini değiştir
+                    const tabId = this.getAttribute('data-tab');
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+    </script>
+</body>
+</html>

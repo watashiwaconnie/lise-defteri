@@ -1,0 +1,26 @@
+# Bu dosya, belirli dosya veya dizinler için otomatik olarak review isteyeceğiniz kişileri tanımlar
+# Her satır bir dosya deseni ve bir veya daha fazla sahip içerir
+# Daha fazla bilgi için: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Bu dosya repository'nin varsayılan sahiplerini tanımlar
+* @watashiwaconnie
+
+# Supabase ile ilgili dosyalar
+/supabase/ @watashiwaconnie
+*.sql @watashiwaconnie
+
+# Frontend bileşenleri
+/src/components/ @watashiwaconnie
+
+# API ve backend
+/src/app/api/ @watashiwaconnie
+/src/lib/supabase/ @watashiwaconnie
+
+# Konfigürasyon dosyaları
+*.config.js @watashiwaconnie
+*.config.ts @watashiwaconnie
+package.json @watashiwaconnie
+tsconfig.json @watashiwaconnie
+
+# GitHub Actions workflow dosyaları
+/.github/workflows/ @watashiwaconnie

@@ -1,0 +1,14 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/auth/login/page": "app/auth/login/page.js",
+  "/auth/register/page": "app/auth/register/page.js",
+  "/forum/page": "app/forum/page.js",
+  "/friends/page": "app/friends/page.js",
+  "/leaderboard/page": "app/leaderboard/page.js",
+  "/page": "app/page.js",
+  "/profile/setup/page": "app/profile/setup/page.js",
+  "/profile/[username]/page": "app/profile/[username]/page.js",
+  "/education/page": "app/education/page.js",
+  "/entertainment/page": "app/entertainment/page.js",
+  "/events/page": "app/events/page.js"
+}

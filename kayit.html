@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - Lise Defteri</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Lise Defteri</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="portfolyo.html">Portfolyo</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="forum.html">Forum</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="auth-container">
+            <div class="auth-form">
+                <h2>Kayıt Ol</h2>
+                <div id="register-error" class="error-message" style="display: none; color: red; margin-bottom: 15px;"></div>
+                
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="username">Kullanıcı Adı</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="full-name">Ad Soyad</label>
+                        <input type="text" id="full-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">E-posta</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Şifre</label>
+                        <input type="password" id="password" required>
+                        <small>En az 6 karakter uzunluğunda olmalıdır.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password">Şifre Tekrar</label>
+                        <input type="password" id="confirm-password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Kayıt Ol</button>
+                </form>
+                
+                <div class="auth-links">
+                    <p>Zaten hesabınız var mı? <a href="giris.html">Giriş Yap</a></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    <p>&copy; <span id="current-year"></span> Lise Defteri. Tüm hakları saklıdır.</p>
+                </div>
+                <div class="social-links">
+                    <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="#" target="_blank" rel="noopener noreferrer">Twitter</a>
+                    <a href="https://github.com/watashiwaconnie/lise-defteri.git" target="_blank" rel="noopener noreferrer">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Yıl bilgisini otomatik güncelle
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Supabase istemcisini başlat
+        const supabaseUrl = 'https://owwucdnfvzrwrqxseuyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93d3VjZG5mdnpyd3JxeHNldXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5NTc0ODEsImV4cCI6MjA2ODUzMzQ4MX0.ro_9mRz3QbSFOQc5Fse-qeuuFkHjWXJyaBbcFE47eI4';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Kayıt formunu dinle
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const fullName = document.getElementById('full-name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const errorElement = document.getElementById('register-error');
+            
+            // Form doğrulama
+            if (password.length < 6) {
+                errorElement.textContent = 'Şifre en az 6 karakter uzunluğunda olmalıdır.';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Şifreler eşleşmiyor.';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            try {
+                // Kullanıcı oluştur
+                const { data: { user }, error: signUpError } = await supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+                
+                if (signUpError) {
+                    errorElement.textContent = signUpError.message;
+                    errorElement.style.display = 'block';
+                    return;
+                }
+                
+                if (user) {
+                    // Profil oluştur
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .insert([{ 
+                            id: user.id, 
+                            username: username, 
+                            full_name: fullName,
+                            avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=random`
+                        }]);
+                    
+                    if (profileError) {
+                        errorElement.textContent = profileError.message;
+                        errorElement.style.display = 'block';
+                        return;
+                    }
+                    
+                    // Başarılı kayıt, giriş sayfasına yönlendir
+                    alert('Kayıt işlemi başarılı! Lütfen e-posta adresinizi doğrulayın ve giriş yapın.');
+                    window.location.href = 'giris.html';
+                }
+            } catch (error) {
+                errorElement.textContent = 'Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.';
+                errorElement.style.display = 'block';
+                console.error('Kayıt hatası:', error.message);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum - Lise Defteri</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Lise Defteri</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="portfolyo.html">Portfolyo</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="forum.html" class="active">Forum</a></li>
+                    <!-- Auth links will be added dynamically by JavaScript -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="forum-header">
+            <div class="container">
+                <h1>Forum</h1>
+                <p>Arkadaşlarla sohbet edebileceğiniz, sorular sorabileceğiniz ve bilgi paylaşabileceğiniz forum alanına hoş geldiniz.</p>
+                <div id="forum-auth-message" style="display: none;" class="alert alert-info">
+                    Konu açmak ve cevap yazmak için lütfen <a href="giris.html">giriş yapın</a> veya <a href="kayit.html">kayıt olun</a>.
+                </div>
+                <div id="new-topic-button-container" style="display: none;">
+                    <button id="new-topic-btn" class="btn btn-primary">Yeni Konu Aç</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="forum-categories">
+            <div class="container">
+                <h2 class="section-title">Kategoriler</h2>
+                <div class="categories-container">
+                    <!-- Kategoriler JavaScript ile yüklenecek -->
+                    <div class="loading-spinner" id="categories-loading">
+                        <div class="spinner"></div>
+                        <p>Kategoriler yükleniyor...</p>
+                    </div>
+                    <div id="categories-error" class="error-message" style="display: none;">
+                        <p>Kategoriler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.</p>
+                    </div>
+                    <div id="categories-container" class="categories-grid">
+                        <!-- Örnek kategori kartları (JavaScript ile değiştirilecek) -->
+                        <div class="category-card">
+                            <h3>Genel Konular</h3>
+                            <p>Genel sohbet, tanışma ve her türlü konu için.</p>
+                            <div class="category-stats">
+                                <div class="stat">
+                                    <span class="stat-value">15</span>
+                                    <span class="stat-label">Konu</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">42</span>
+                                    <span class="stat-label">Mesaj</span>
+                                </div>
+                            </div>
+                            <a href="forum-kategori.html?id=1" class="btn btn-outline">Konuları Görüntüle</a>
+                        </div>
+                        <div class="category-card">
+                            <h3>Okul ve Dersler</h3>
+                            <p>Okul hayatı, dersler, ödevler ve sınavlar hakkında.</p>
+                            <div class="category-stats">
+                                <div class="stat">
+                                    <span class="stat-value">8</span>
+                                    <span class="stat-label">Konu</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">23</span>
+                                    <span class="stat-label">Mesaj</span>
+                                </div>
+                            </div>
+                            <a href="forum-kategori.html?id=2" class="btn btn-outline">Konuları Görüntüle</a>
+                        </div>
+                        <div class="category-card">
+                            <h3>Teknoloji</h3>
+                            <p>Bilgisayarlar, yazılım, donanım ve teknoloji haberleri.</p>
+                            <div class="category-stats">
+                                <div class="stat">
+                                    <span class="stat-value">12</span>
+                                    <span class="stat-label">Konu</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">37</span>
+                                    <span class="stat-label">Mesaj</span>
+                                </div>
+                            </div>
+                            <a href="forum-kategori.html?id=3" class="btn btn-outline">Konuları Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="forum-latest">
+            <div class="container">
+                <h2 class="section-title">Son Konular</h2>
+                <div class="latest-topics-container">
+                    <!-- Son konular JavaScript ile yüklenecek -->
+                    <div class="loading-spinner" id="topics-loading">
+                        <div class="spinner"></div>
+                        <p>Konular yükleniyor...</p>
+                    </div>
+                    <div id="topics-error" class="error-message" style="display: none;">
+                        <p>Konular yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.</p>
+                    </div>
+                    <div id="latest-topics" class="topics-list">
+                        <!-- Örnek konu kartları (JavaScript ile değiştirilecek) -->
+                        <div class="topic-card">
+                            <div class="topic-info">
+                                <h3>Merhaba arkadaşlar!</h3>
+                                <p class="topic-meta">Kategori: <span>Genel</span> | Yazar: <span>Admin</span> | Tarih: <span>25 Mayıs 2023</span></p>
+                                <p class="topic-excerpt">Forumumuza hoş geldiniz! Bu ilk konu ile herkese merhaba demek istedim...</p>
+                            </div>
+                            <div class="topic-stats">
+                                <div class="stat">
+                                    <span class="stat-value">7</span>
+                                    <span class="stat-label">Cevap</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">156</span>
+                                    <span class="stat-label">Görüntüleme</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="topic-card">
+                            <div class="topic-info">
+                                <h3>Matematik sınavına nasıl hazırlanmalıyım?</h3>
+                                <p class="topic-meta">Kategori: <span>Okul ve Dersler</span> | Yazar: <span>Öğrenci123</span> | Tarih: <span>23 Mayıs 2023</span></p>
+                                <p class="topic-excerpt">Gelecek hafta matematik sınavım var ve trigonometri konusunda zorlanıyorum. Tavsiyeleriniz var mı?</p>
+                            </div>
+                            <div class="topic-stats">
+                                <div class="stat">
+                                    <span class="stat-value">4</span>
+                                    <span class="stat-label">Cevap</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">89</span>
+                                    <span class="stat-label">Görüntüleme</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="topic-card">
+                            <div class="topic-info">
+                                <h3>Yeni çıkan oyun hakkında ne düşünüyorsunuz?</h3>
+                                <p class="topic-meta">Kategori: <span>Teknoloji</span> | Yazar: <span>Gamer456</span> | Tarih: <span>20 Mayıs 2023</span></p>
+                                <p class="topic-excerpt">Geçen hafta çıkan X oyununu oynayan var mı? Performans sorunları yaşayan var mı?</p>
+                            </div>
+                            <div class="topic-stats">
+                                <div class="stat">
+                                    <span class="stat-value">6</span>
+                                    <span class="stat-label">Cevap</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">112</span>
+                                    <span class="stat-label">Görüntüleme</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Yeni Konu Oluşturma Modal -->
+        <div id="new-topic-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Yeni Konu Oluştur</h2>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="new-topic-form">
+                        <div class="form-group">
+                            <label for="topic-category">Kategori</label>
+                            <select id="topic-category" required>
+                                <!-- Kategoriler JavaScript ile doldurulacak -->
+                                <option value="">Kategori Seçin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="topic-title">Başlık</label>
+                            <input type="text" id="topic-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="topic-content">İçerik</label>
+                            <textarea id="topic-content" rows="6" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Konu Oluştur</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-topic">İptal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    <p>&copy; <span id="current-year"></span> Lise Defteri. Tüm hakları saklıdır.</p>
+                </div>
+                <div class="social-links">
+                    <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="#" target="_blank" rel="noopener noreferrer">Twitter</a>
+                    <a href="https://github.com/watashiwaconnie/lise-defteri.git" target="_blank" rel="noopener noreferrer">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        // Yıl bilgisini otomatik güncelle
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Supabase istemcisini başlat
+        const supabaseUrl = 'https://owwucdnfvzrwrqxseuyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93d3VjZG5mdnpyd3JxeHNldXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5NTc0ODEsImV4cCI6MjA2ODUzMzQ4MX0.ro_9mRz3QbSFOQc5Fse-qeuuFkHjWXJyaBbcFE47eI4';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // DOM elementleri
+        const categoriesContainer = document.getElementById('categories-container');
+        const categoriesLoading = document.getElementById('categories-loading');
+        const categoriesError = document.getElementById('categories-error');
+        const latestTopics = document.getElementById('latest-topics');
+        const topicsLoading = document.getElementById('topics-loading');
+        const topicsError = document.getElementById('topics-error');
+        const newTopicBtn = document.getElementById('new-topic-btn');
+        const newTopicModal = document.getElementById('new-topic-modal');
+        const newTopicForm = document.getElementById('new-topic-form');
+        const cancelTopicBtn = document.getElementById('cancel-topic');
+        const closeModalBtn = document.querySelector('.close-modal');
+        const topicCategorySelect = document.getElementById('topic-category');
+        const forumAuthMessage = document.getElementById('forum-auth-message');
+        const newTopicBtnContainer = document.getElementById('new-topic-button-container');
+        
+        // Sayfa yüklendiğinde çalışacak fonksiyonlar
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Kullanıcı oturum durumunu kontrol et
+            await checkUserSession();
+            
+            // Kategorileri yükle
+            loadCategories();
+            
+            // Son konuları yükle
+            loadLatestTopics();
+            
+            // Modal olaylarını dinle
+            setupModalEvents();
+        });
+        
+        // Kullanıcı oturum durumunu kontrol et
+        async function checkUserSession() {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('Oturum kontrolü hatası:', error.message);
+                    return;
+                }
+                
+                // Kullanıcı giriş yapmışsa yeni konu butonunu göster, yapmamışsa giriş mesajını göster
+                if (session && session.user) {
+                    forumAuthMessage.style.display = 'none';
+                    newTopicBtnContainer.style.display = 'block';
+                } else {
+                    forumAuthMessage.style.display = 'block';
+                    newTopicBtnContainer.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Oturum kontrolü hatası:', error.message);
+            }
+        }
+        
+        // Kategorileri yükle
+        async function loadCategories() {
+            try {
+                categoriesLoading.style.display = 'flex';
+                categoriesContainer.style.display = 'none';
+                categoriesError.style.display = 'none';
+                
+                // Kategorileri al
+                const { data: categories, error } = await supabase
+                    .from('forum_categories')
+                    .select('*')
+                    .order('name');
+                
+                if (error) {
+                    console.error('Kategori yükleme hatası:', error.message);
+                    categoriesLoading.style.display = 'none';
+                    categoriesError.style.display = 'block';
+                    return;
+                }
+                
+                // Kategorileri görüntüle
+                categoriesLoading.style.display = 'none';
+                
+                if (categories.length === 0) {
+                    categoriesContainer.innerHTML = '<p>Henüz kategori bulunmuyor.</p>';
+                    categoriesContainer.style.display = 'block';
+                    return;
+                }
+                
+                // Kategori kartlarını oluştur
+                categoriesContainer.innerHTML = '';
+                categories.forEach(category => {
+                    // Kategori istatistiklerini al (gerçek veriler olduğunda kullanılacak)
+                    // Şu an için örnek veriler kullanıyoruz
+                    const topicCount = Math.floor(Math.random() * 20) + 1;
+                    const postCount = Math.floor(Math.random() * 50) + topicCount;
+                    
+                    const categoryCard = document.createElement('div');
+                    categoryCard.classList.add('category-card');
+                    categoryCard.innerHTML = `
+                        <h3>${category.name}</h3>
+                        <p>${category.description || 'Açıklama yok'}</p>
+                        <div class="category-stats">
+                            <div class="stat">
+                                <span class="stat-value">${topicCount}</span>
+                                <span class="stat-label">Konu</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">${postCount}</span>
+                                <span class="stat-label">Mesaj</span>
+                            </div>
+                        </div>
+                        <a href="forum-kategori.html?id=${category.id}" class="btn btn-outline">Konuları Görüntüle</a>
+                    `;
+                    
+                    categoriesContainer.appendChild(categoryCard);
+                    
+                    // Kategori seçim listesine ekle
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    topicCategorySelect.appendChild(option);
+                });
+                
+                categoriesContainer.style.display = 'grid';
+            } catch (error) {
+                console.error('Kategori yükleme hatası:', error.message);
+                categoriesLoading.style.display = 'none';
+                categoriesError.style.display = 'block';
+            }
+        }
+        
+        // Son konuları yükle
+        async function loadLatestTopics() {
+            try {
+                topicsLoading.style.display = 'flex';
+                latestTopics.style.display = 'none';
+                topicsError.style.display = 'none';
+                
+                // Son konuları al
+                const { data: topics, error } = await supabase
+                    .from('forum_topics')
+                    .select(`
+                        id,
+                        title,
+                        content,
+                        created_at,
+                        view_count,
+                        forum_categories(id, name),
+                        profiles(username)
+                    `)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (error) {
+                    console.error('Konu yükleme hatası:', error.message);
+                    topicsLoading.style.display = 'none';
+                    topicsError.style.display = 'block';
+                    return;
+                }
+                
+                // Konuları görüntüle
+                topicsLoading.style.display = 'none';
+                
+                if (!topics || topics.length === 0) {
+                    latestTopics.innerHTML = '<p>Henüz konu bulunmuyor.</p>';
+                    latestTopics.style.display = 'block';
+                    return;
+                }
+                
+                // Konu kartlarını oluştur
+                latestTopics.innerHTML = '';
+                topics.forEach(topic => {
+                    // Tarih formatı
+                    const date = new Date(topic.created_at).toLocaleDateString('tr-TR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    
+                    // Cevap sayısını al (gerçek veriler olduğunda kullanılacak)
+                    // Şu an için örnek veriler kullanıyoruz
+                    const replyCount = Math.floor(Math.random() * 10);
+                    
+                    const topicCard = document.createElement('div');
+                    topicCard.classList.add('topic-card');
+                    topicCard.innerHTML = `
+                        <div class="topic-info">
+                            <h3><a href="forum-konu.html?id=${topic.id}">${topic.title}</a></h3>
+                            <p class="topic-meta">Kategori: <span>${topic.forum_categories.name}</span> | Yazar: <span>${topic.profiles.username}</span> | Tarih: <span>${date}</span></p>
+                            <p class="topic-excerpt">${topic.content.substring(0, 150)}${topic.content.length > 150 ? '...' : ''}</p>
+                        </div>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="stat-value">${replyCount}</span>
+                                <span class="stat-label">Cevap</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">${topic.view_count || 0}</span>
+                                <span class="stat-label">Görüntüleme</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    latestTopics.appendChild(topicCard);
+                });
+                
+                latestTopics.style.display = 'block';
+            } catch (error) {
+                console.error('Konu yükleme hatası:', error.message);
+                topicsLoading.style.display = 'none';
+                topicsError.style.display = 'block';
+            }
+        }
+        
+        // Modal olaylarını ayarla
+        function setupModalEvents() {
+            // Yeni konu butonuna tıklandığında modalı aç
+            newTopicBtn.addEventListener('click', function() {
+                newTopicModal.style.display = 'block';
+            });
+            
+            // Modalı kapatma butonları
+            closeModalBtn.addEventListener('click', function() {
+                newTopicModal.style.display = 'none';
+            });
+            
+            cancelTopicBtn.addEventListener('click', function() {
+                newTopicModal.style.display = 'none';
+            });
+            
+            // Modal dışına tıklandığında kapat
+            window.addEventListener('click', function(event) {
+                if (event.target === newTopicModal) {
+                    newTopicModal.style.display = 'none';
+                }
+            });
+            
+            // Yeni konu formunu gönderme
+            newTopicForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const categoryId = topicCategorySelect.value;
+                const title = document.getElementById('topic-title').value;
+                const content = document.getElementById('topic-content').value;
+                
+                if (!categoryId || !title || !content) {
+                    alert('Lütfen tüm alanları doldurun.');
+                    return;
+                }
+                
+                try {
+                    // Kullanıcı oturumunu kontrol et
+                    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                    
+                    if (sessionError || !session) {
+                        alert('Konu oluşturmak için giriş yapmalısınız.');
+                        newTopicModal.style.display = 'none';
+                        return;
+                    }
+                    
+                    // Yeni konu oluştur
+                    const { data, error } = await supabase
+                        .from('forum_topics')
+                        .insert([
+                            {
+                                title: title,
+                                content: content,
+                                user_id: session.user.id,
+                                category_id: categoryId,
+                                view_count: 0
+                            }
+                        ])
+                        .select();
+                    
+                    if (error) {
+                        console.error('Konu oluşturma hatası:', error.message);
+                        alert('Konu oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
+                        return;
+                    }
+                    
+                    // Başarılı oluşturma, konu sayfasına yönlendir
+                    alert('Konu başarıyla oluşturuldu!');
+                    newTopicModal.style.display = 'none';
+                    
+                    // Formu temizle
+                    newTopicForm.reset();
+                    
+                    // Konular listesini yenile
+                    loadLatestTopics();
+                    
+                    // Konu sayfasına yönlendir
+                    if (data && data.length > 0) {
+                        window.location.href = `forum-konu.html?id=${data[0].id}`;
+                    }
+                } catch (error) {
+                    console.error('Konu oluşturma hatası:', error.message);
+                    alert('Konu oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

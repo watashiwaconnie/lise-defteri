@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konu - Lise Defteri Forum</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Lise Defteri</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="portfolyo.html">Portfolyo</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="forum.html" class="active">Forum</a></li>
+                    <!-- Auth links will be added dynamically by JavaScript -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="forum-container">
+        <div class="container">
+            <div class="breadcrumbs" id="breadcrumbs">
+                <a href="forum.html">Forum</a> &gt; <a id="category-link" href="#">Kategori</a> &gt; <span id="topic-title-breadcrumb">Konu</span>
+            </div>
+            
+            <div class="loading" id="loading-topic">
+                <div class="spinner"></div>
+                <p>Konu yükleniyor...</p>
+            </div>
+            
+            <div class="error-message" id="error-message" style="display: none;">
+                <p>Konu yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>
+            </div>
+            
+            <div class="topic-detail" id="topic-detail" style="display: none;">
+                <!-- Topic details will be loaded here -->
+            </div>
+            
+            <div class="topic-replies" id="topic-replies">
+                <h3>Cevaplar</h3>
+                <div class="loading" id="loading-replies">
+                    <div class="spinner"></div>
+                    <p>Cevaplar yükleniyor...</p>
+                </div>
+                
+                <div class="error-message" id="replies-error" style="display: none;">
+                    <p>Cevaplar yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>
+                </div>
+                
+                <div class="replies-list" id="replies-list" style="display: none;">
+                    <!-- Replies will be loaded here -->
+                </div>
+                
+                <div class="no-replies" id="no-replies" style="display: none;">
+                    <p>Bu konuya henüz cevap verilmemiş. İlk cevabı siz yazabilirsiniz!</p>
+                </div>
+            </div>
+            
+            <div class="reply-form-container" id="reply-form-container" style="display: none;">
+                <h3>Cevap Yaz</h3>
+                <form id="reply-form">
+                    <div class="form-group">
+                        <textarea id="reply-content" name="reply-content" rows="6" placeholder="Cevabınızı buraya yazın..." required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Cevabı Gönder</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="auth-message" id="auth-message" style="display: none;">
+                <p>Cevap yazmak için <a href="giris.html">giriş yapın</a> veya <a href="kayit.html">kayıt olun</a>.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    <p>&copy; <span id="current-year"></span> Lise Defteri. Tüm hakları saklıdır.</p>
+                </div>
+                <div class="social-links">
+                    <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="#" target="_blank" rel="noopener noreferrer">Twitter</a>
+                    <a href="https://github.com/watashiwaconnie/lise-defteri.git" target="_blank" rel="noopener noreferrer">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Yıl bilgisini otomatik güncelle
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Supabase istemcisini başlat
+        const supabaseUrl = 'https://owwucdnfvzrwrqxseuyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93d3VjZG5mdnpyd3JxeHNldXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5NTc0ODEsImV4cCI6MjA2ODUzMzQ4MX0.ro_9mRz3QbSFOQc5Fse-qeuuFkHjWXJyaBbcFE47eI4';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // DOM yüklendikten sonra çalışacak kodlar
+        document.addEventListener('DOMContentLoaded', async function() {
+            // URL'den konu ID'sini al
+            const urlParams = new URLSearchParams(window.location.search);
+            const topicId = urlParams.get('id');
+            
+            if (!topicId) {
+                // Konu ID'si yoksa forum ana sayfasına yönlendir
+                window.location.href = 'forum.html';
+                return;
+            }
+            
+            // Kullanıcı oturumunu kontrol et
+            await checkUserSession();
+            
+            // Konu detaylarını yükle
+            loadTopicDetails(topicId);
+            
+            // Konuya ait cevapları yükle
+            loadTopicReplies(topicId);
+            
+            // Cevap formunu ayarla
+            setupReplyForm(topicId);
+            
+            // Görüntüleme sayısını artır
+            incrementViewCount(topicId);
+        });
+        
+        // Konu detaylarını yükle
+        async function loadTopicDetails(topicId) {
+            const topicDetailElement = document.getElementById('topic-detail');
+            const loadingElement = document.getElementById('loading-topic');
+            const errorElement = document.getElementById('error-message');
+            const breadcrumbsElement = document.getElementById('breadcrumbs');
+            
+            try {
+                const { data: topic, error } = await supabase
+                    .from('forum_topics')
+                    .select(`
+                        *,
+                        profiles(username, full_name, avatar_url),
+                        forum_categories(id, name)
+                    `)
+                    .eq('id', topicId)
+                    .single();
+                
+                if (error) throw error;
+                
+                if (topic) {
+                    // Sayfa başlığını güncelle
+                    document.title = `${topic.title} - Lise Defteri Forum`;
+                    
+                    // Breadcrumbs'ı güncelle
+                    document.getElementById('topic-title-breadcrumb').textContent = topic.title;
+                    
+                    if (topic.forum_categories) {
+                        const categoryLink = document.getElementById('category-link');
+                        categoryLink.textContent = topic.forum_categories.name;
+                        categoryLink.href = `forum-kategori.html?id=${topic.forum_categories.id}`;
+                    }
+                    
+                    // Konu detaylarını oluştur
+                    const createdAt = new Date(topic.created_at).toLocaleDateString('tr-TR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    const author = topic.profiles ? topic.profiles.username : 'Anonim';
+                    const authorName = topic.profiles && topic.profiles.full_name ? topic.profiles.full_name : author;
+                    const avatarUrl = topic.profiles && topic.profiles.avatar_url ? topic.profiles.avatar_url : 'https://via.placeholder.com/80';
+                    
+                    topicDetailElement.innerHTML = `
+                        <div class="topic-header">
+                            <h2>${topic.title}</h2>
+                            <div class="topic-meta">
+                                <span>Kategori: ${topic.forum_categories ? topic.forum_categories.name : 'Genel'}</span> | 
+                                <span>Tarih: ${createdAt}</span> | 
+                                <span>Görüntüleme: ${topic.view_count || 0}</span>
+                            </div>
+                        </div>
+                        <div class="topic-content">
+                            <div class="author-info">
+                                <div class="author-avatar">
+                                    <img src="${avatarUrl}" alt="${authorName}">
+                                </div>
+                                <div class="author-name">${authorName}</div>
+                            </div>
+                            <div class="content-text">
+                                ${formatContent(topic.content)}
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Yükleme animasyonunu gizle ve konu detaylarını göster
+                    loadingElement.style.display = 'none';
+                    topicDetailElement.style.display = 'block';
+                } else {
+                    // Konu bulunamadıysa forum ana sayfasına yönlendir
+                    window.location.href = 'forum.html';
+                }
+            } catch (error) {
+                console.error('Konu detayları yüklenirken hata:', error);
+                errorElement.style.display = 'block';
+                loadingElement.style.display = 'none';
+            }
+        }
+        
+        // Konuya ait cevapları yükle
+        async function loadTopicReplies(topicId) {
+            const repliesListElement = document.getElementById('replies-list');
+            const loadingElement = document.getElementById('loading-replies');
+            const errorElement = document.getElementById('replies-error');
+            const noRepliesElement = document.getElementById('no-replies');
+            
+            try {
+                const { data: posts, error } = await supabase
+                    .from('forum_posts')
+                    .select(`
+                        id,
+                        content,
+                        created_at,
+                        profiles(username, full_name, avatar_url)
+                    `)
+                    .eq('topic_id', topicId)
+                    .order('created_at', { ascending: true });
+                
+                if (error) throw error;
+                
+                // Yükleme animasyonunu gizle
+                loadingElement.style.display = 'none';
+                
+                if (posts && posts.length > 0) {
+                    // Cevapları listele
+                    repliesListElement.innerHTML = '';
+                    
+                    posts.forEach(post => {
+                        const createdAt = new Date(post.created_at).toLocaleDateString('tr-TR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        const author = post.profiles ? post.profiles.username : 'Anonim';
+                        const authorName = post.profiles && post.profiles.full_name ? post.profiles.full_name : author;
+                        const avatarUrl = post.profiles && post.profiles.avatar_url ? post.profiles.avatar_url : 'https://via.placeholder.com/80';
+                        
+                        const postElement = document.createElement('div');
+                        postElement.className = 'reply-item';
+                        postElement.innerHTML = `
+                            <div class="reply-content">
+                                <div class="author-info">
+                                    <div class="author-avatar">
+                                        <img src="${avatarUrl}" alt="${authorName}">
+                                    </div>
+                                    <div class="author-name">${authorName}</div>
+                                </div>
+                                <div class="content-text">
+                                    ${formatContent(post.content)}
+                                </div>
+                                <div class="reply-meta">
+                                    <span>Tarih: ${createdAt}</span>
+                                </div>
+                            </div>
+                        `;
+                        
+                        repliesListElement.appendChild(postElement);
+                    });
+                    
+                    repliesListElement.style.display = 'block';
+                } else {
+                    // Cevap yoksa mesaj göster
+                    noRepliesElement.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Cevaplar yüklenirken hata:', error);
+                errorElement.style.display = 'block';
+                loadingElement.style.display = 'none';
+            }
+        }
+        
+        // Cevap formunu ayarla
+        function setupReplyForm(topicId) {
+            const replyFormContainer = document.getElementById('reply-form-container');
+            const authMessageElement = document.getElementById('auth-message');
+            const replyForm = document.getElementById('reply-form');
+            
+            // Kullanıcı giriş yapmışsa cevap formunu göster, yapmamışsa giriş mesajını göster
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) {
+                    replyFormContainer.style.display = 'block';
+                } else {
+                    authMessageElement.style.display = 'block';
+                }
+            });
+            
+            // Form gönderildiğinde cevap oluştur
+            replyForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                
+                const contentInput = document.getElementById('reply-content');
+                const content = contentInput.value.trim();
+                
+                if (!content) {
+                    alert('Lütfen bir cevap yazın.');
+                    return;
+                }
+                
+                try {
+                    // Kullanıcı bilgilerini al
+                    const { data: { session } } = await supabase.auth.getSession();
+                    
+                    if (!session) {
+                        alert('Oturumunuz sona ermiş. Lütfen tekrar giriş yapın.');
+                        window.location.href = 'giris.html';
+                        return;
+                    }
+                    
+                    const userId = session.user.id;
+                    
+                    // Yeni cevap oluştur
+                    const { data, error } = await supabase
+                        .from('forum_posts')
+                        .insert([
+                            {
+                                content: content,
+                                user_id: userId,
+                                topic_id: topicId
+                            }
+                        ]);
+                    
+                    if (error) throw error;
+                    
+                    // Başarılı olursa sayfayı yenile
+                    contentInput.value = '';
+                    window.location.reload();
+                } catch (error) {
+                    console.error('Cevap oluşturulurken hata:', error);
+                    alert('Cevap oluşturulurken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+                }
+            });
+        }
+        
+        // Görüntüleme sayısını artır
+        async function incrementViewCount(topicId) {
+            try {
+                // Önce mevcut görüntüleme sayısını al
+                const { data: topic, error: fetchError } = await supabase
+                    .from('forum_topics')
+                    .select('view_count')
+                    .eq('id', topicId)
+                    .single();
+                
+                if (fetchError) throw fetchError;
+                
+                // Görüntüleme sayısını bir artır
+                const newViewCount = (topic.view_count || 0) + 1;
+                
+                const { error: updateError } = await supabase
+                    .from('forum_topics')
+                    .update({ view_count: newViewCount })
+                    .eq('id', topicId);
+                
+                if (updateError) throw updateError;
+            } catch (error) {
+                console.error('Görüntüleme sayısı güncellenirken hata:', error);
+                // Görüntüleme sayısı güncellenemese bile kullanıcı deneyimini etkilemeyeceği için sessizce devam et
+            }
+        }
+        
+        // İçeriği formatla (basit bir şekilde satır sonlarını <br> etiketine dönüştür)
+        function formatContent(content) {
+            if (!content) return '';
+            
+            // Satır sonlarını <br> etiketine dönüştür
+            return content.replace(/\n/g, '<br>');
+        }
+    </script>
+</body>
+</html>

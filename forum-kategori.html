@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kategori - Lise Defteri Forum</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Lise Defteri</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="portfolyo.html">Portfolyo</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="forum.html" class="active">Forum</a></li>
+                    <!-- Auth links will be added dynamically by JavaScript -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="forum-header">
+        <div class="container">
+            <div class="forum-header-content">
+                <h2 id="category-title">Kategori Yükleniyor...</h2>
+                <p id="category-description"></p>
+                <div class="forum-auth-message" id="auth-message">
+                    <p>Yeni konu açmak için <a href="giris.html">giriş yapın</a> veya <a href="kayit.html">kayıt olun</a>.</p>
+                </div>
+                <button id="new-topic-btn" class="btn btn-primary" style="display: none;">Yeni Konu Aç</button>
+            </div>
+        </div>
+    </section>
+
+    <main class="forum-container">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="forum.html">Forum</a> &gt; <span id="breadcrumb-category">Kategori</span>
+            </div>
+            
+            <div class="loading" id="loading-topics">
+                <div class="spinner"></div>
+                <p>Konular yükleniyor...</p>
+            </div>
+            
+            <div class="error-message" id="error-message" style="display: none;">
+                <p>Konular yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>
+            </div>
+            
+            <div class="topic-list" id="topic-list" style="display: none;">
+                <!-- Topics will be loaded here -->
+            </div>
+            
+            <div class="no-topics" id="no-topics" style="display: none;">
+                <p>Bu kategoride henüz konu bulunmuyor. İlk konuyu siz açabilirsiniz!</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- New Topic Modal -->
+    <div class="modal" id="new-topic-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Yeni Konu Aç</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="new-topic-form">
+                    <div class="form-group">
+                        <label for="topic-title">Konu Başlığı</label>
+                        <input type="text" id="topic-title" name="topic-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="topic-content">İçerik</label>
+                        <textarea id="topic-content" name="topic-content" rows="6" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary cancel-modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Konuyu Oluştur</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    <p>&copy; <span id="current-year"></span> Lise Defteri. Tüm hakları saklıdır.</p>
+                </div>
+                <div class="social-links">
+                    <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="#" target="_blank" rel="noopener noreferrer">Twitter</a>
+                    <a href="https://github.com/watashiwaconnie/lise-defteri.git" target="_blank" rel="noopener noreferrer">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Yıl bilgisini otomatik güncelle
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Supabase istemcisini başlat
+        const supabaseUrl = 'https://owwucdnfvzrwrqxseuyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93d3VjZG5mdnpyd3JxeHNldXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5NTc0ODEsImV4cCI6MjA2ODUzMzQ4MX0.ro_9mRz3QbSFOQc5Fse-qeuuFkHjWXJyaBbcFE47eI4';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // DOM yüklendikten sonra çalışacak kodlar
+        document.addEventListener('DOMContentLoaded', async function() {
+            // URL'den kategori ID'sini al
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryId = urlParams.get('id');
+            
+            if (!categoryId) {
+                // Kategori ID'si yoksa forum ana sayfasına yönlendir
+                window.location.href = 'forum.html';
+                return;
+            }
+            
+            // Kullanıcı oturumunu kontrol et
+            await checkUserSession();
+            
+            // Kategori bilgilerini yükle
+            loadCategoryDetails(categoryId);
+            
+            // Kategoriye ait konuları yükle
+            loadCategoryTopics(categoryId);
+            
+            // Yeni konu modalını ayarla
+            setupNewTopicModal(categoryId);
+        });
+        
+        // Kategori detaylarını yükle
+        async function loadCategoryDetails(categoryId) {
+            try {
+                const { data: category, error } = await supabase
+                    .from('forum_categories')
+                    .select('*')
+                    .eq('id', categoryId)
+                    .single();
+                
+                if (error) throw error;
+                
+                if (category) {
+                    // Kategori başlığını ve açıklamasını güncelle
+                    document.getElementById('category-title').textContent = category.name;
+                    document.getElementById('breadcrumb-category').textContent = category.name;
+                    document.getElementById('category-description').textContent = category.description;
+                    document.title = `${category.name} - Lise Defteri Forum`;
+                } else {
+                    // Kategori bulunamadıysa forum ana sayfasına yönlendir
+                    window.location.href = 'forum.html';
+                }
+            } catch (error) {
+                console.error('Kategori detayları yüklenirken hata:', error);
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('loading-topics').style.display = 'none';
+            }
+        }
+        
+        // Kategoriye ait konuları yükle
+        async function loadCategoryTopics(categoryId) {
+            const topicListElement = document.getElementById('topic-list');
+            const loadingElement = document.getElementById('loading-topics');
+            const errorElement = document.getElementById('error-message');
+            const noTopicsElement = document.getElementById('no-topics');
+            
+            try {
+                const { data: topics, error } = await supabase
+                    .from('forum_topics')
+                    .select(`
+                        id,
+                        title,
+                        content,
+                        created_at,
+                        view_count,
+                        profiles(username, full_name, avatar_url),
+                        forum_posts(count)
+                    `)
+                    .eq('category_id', categoryId)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                // Yükleme animasyonunu gizle
+                loadingElement.style.display = 'none';
+                
+                if (topics && topics.length > 0) {
+                    // Konuları listele
+                    topicListElement.innerHTML = '';
+                    
+                    topics.forEach(topic => {
+                        const postCount = topic.forum_posts ? topic.forum_posts.length : 0;
+                        const createdAt = new Date(topic.created_at).toLocaleDateString('tr-TR');
+                        const author = topic.profiles ? topic.profiles.username : 'Anonim';
+                        const authorName = topic.profiles && topic.profiles.full_name ? topic.profiles.full_name : author;
+                        const avatarUrl = topic.profiles && topic.profiles.avatar_url ? topic.profiles.avatar_url : 'https://via.placeholder.com/40';
+                        
+                        const topicElement = document.createElement('div');
+                        topicElement.className = 'topic-item';
+                        topicElement.innerHTML = `
+                            <div class="topic-avatar">
+                                <img src="${avatarUrl}" alt="${authorName}">
+                            </div>
+                            <div class="topic-info">
+                                <h3><a href="forum-konu.html?id=${topic.id}">${topic.title}</a></h3>
+                                <p class="topic-meta">Yazar: <span>${authorName}</span> | Tarih: <span>${createdAt}</span></p>
+                                <p class="topic-excerpt">${topic.content.substring(0, 150)}${topic.content.length > 150 ? '...' : ''}</p>
+                            </div>
+                            <div class="topic-stats">
+                                <div class="stat">
+                                    <span class="stat-value">${postCount}</span>
+                                    <span class="stat-label">Cevap</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">${topic.view_count || 0}</span>
+                                    <span class="stat-label">Görüntüleme</span>
+                                </div>
+                            </div>
+                        `;
+                        
+                        topicListElement.appendChild(topicElement);
+                    });
+                    
+                    topicListElement.style.display = 'block';
+                } else {
+                    // Konu yoksa mesaj göster
+                    noTopicsElement.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Konular yüklenirken hata:', error);
+                errorElement.style.display = 'block';
+                loadingElement.style.display = 'none';
+            }
+        }
+        
+        // Yeni konu modalını ayarla
+        function setupNewTopicModal(categoryId) {
+            const newTopicBtn = document.getElementById('new-topic-btn');
+            const modal = document.getElementById('new-topic-modal');
+            const closeButtons = document.querySelectorAll('.close-modal, .cancel-modal');
+            const form = document.getElementById('new-topic-form');
+            
+            // Kullanıcı giriş yapmışsa yeni konu butonunu göster
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) {
+                    document.getElementById('auth-message').style.display = 'none';
+                    newTopicBtn.style.display = 'block';
+                }
+            });
+            
+            // Yeni konu butonuna tıklandığında modalı aç
+            newTopicBtn.addEventListener('click', () => {
+                modal.style.display = 'block';
+            });
+            
+            // Kapat butonlarına tıklandığında modalı kapat
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+            });
+            
+            // Modal dışına tıklandığında modalı kapat
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Form gönderildiğinde yeni konu oluştur
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                
+                const titleInput = document.getElementById('topic-title');
+                const contentInput = document.getElementById('topic-content');
+                
+                const title = titleInput.value.trim();
+                const content = contentInput.value.trim();
+                
+                if (!title || !content) {
+                    alert('Lütfen tüm alanları doldurun.');
+                    return;
+                }
+                
+                try {
+                    // Kullanıcı bilgilerini al
+                    const { data: { session } } = await supabase.auth.getSession();
+                    
+                    if (!session) {
+                        alert('Oturumunuz sona ermiş. Lütfen tekrar giriş yapın.');
+                        window.location.href = 'giris.html';
+                        return;
+                    }
+                    
+                    const userId = session.user.id;
+                    
+                    // Yeni konu oluştur
+                    const { data, error } = await supabase
+                        .from('forum_topics')
+                        .insert([
+                            {
+                                title: title,
+                                content: content,
+                                user_id: userId,
+                                category_id: categoryId,
+                                view_count: 0
+                            }
+                        ])
+                        .select();
+                    
+                    if (error) throw error;
+                    
+                    // Başarılı olursa yeni konuya yönlendir
+                    if (data && data.length > 0) {
+                        window.location.href = `forum-konu.html?id=${data[0].id}`;
+                    } else {
+                        // Modalı kapat ve sayfayı yenile
+                        modal.style.display = 'none';
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    console.error('Konu oluşturulurken hata:', error);
+                    alert('Konu oluşturulurken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
