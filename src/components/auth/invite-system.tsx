@@ -10,12 +10,16 @@ import {
   Calendar,
   Shield,
   AlertCircle,
-  Gift
+  Gift,
+  X,
+  Plus
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Slider } from '@/components/ui/slider';
 import { useSupabase } from '@/app/providers';
 import { useAuth } from '@/hooks/use-auth';
 import { formatDate } from '@/lib/utils';
@@ -49,7 +53,10 @@ export function InviteSystem({ mode, onValidCode }: InviteSystemProps) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [copiedCode, setCopiedCode] = useState('');
-
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [maxUses, setMaxUses] = useState(5);
+  const [expiryDays, setExpiryDays] = useState(30);
+  
   const { supabase } = useSupabase();
   const { user } = useAuth();
 
@@ -159,16 +166,16 @@ export function InviteSystem({ mode, onValidCode }: InviteSystemProps) {
       // Generate random code
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
       
-      // Set expiry to 30 days from now
+      // Set expiry based on selected days
       const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 30);
+      expiresAt.setDate(expiresAt.getDate() + expiryDays);
 
       const { error } = await supabase
         .from('invite_codes')
         .insert({
           code,
           created_by: user.id,
-          max_uses: 5, // Default 5 uses per code
+          max_uses: maxUses,
           expires_at: expiresAt.toISOString(),
           is_active: true
         });
@@ -176,6 +183,7 @@ export function InviteSystem({ mode, onValidCode }: InviteSystemProps) {
       if (error) throw error;
 
       setSuccess('Yeni davet kodu oluşturuldu!');
+      setShowCreateModal(false);
       await fetchInviteCodes();
     } catch (error) {
       console.error('Error creating invite code:', error);
@@ -301,11 +309,11 @@ export function InviteSystem({ mode, onValidCode }: InviteSystemProps) {
               </p>
             </div>
             <Button
-              onClick={createInviteCode}
-              disabled={creating}
+              onClick={() => setShowCreateModal(true)}
               className="bg-white/20 text-white hover:bg-white/30"
             >
-              {creating ? 'Oluşturuluyor...' : 'Yeni Kod Oluştur'}
+              <Plus className="h-4 w-4 mr-2" />
+              Yeni Kod Oluştur
             </Button>
           </div>
         </div>
@@ -454,11 +462,90 @@ export function InviteSystem({ mode, onValidCode }: InviteSystemProps) {
           <p className="text-gray-600 mb-4">
             Arkadaşlarınızı platforma davet etmek için yeni bir kod oluşturun
           </p>
-          <Button onClick={createInviteCode} disabled={creating}>
+          <Button onClick={() => setShowCreateModal(true)}>
             İlk Davet Kodunu Oluştur
           </Button>
         </Card>
       )}
+      
+      {/* Davet Kodu Oluşturma Modal */}
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Yeni Davet Kodu Oluştur</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Maksimum Kullanım Sayısı: {maxUses}
+              </label>
+              <Slider
+                value={[maxUses]}
+                min={1}
+                max={1000}
+                step={1}
+                onValueChange={(value) => setMaxUses(value[0])}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>1</span>
+                <span>250</span>
+                <span>500</span>
+                <span>750</span>
+                <span>1000</span>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Geçerlilik Süresi: {expiryDays} gün
+              </label>
+              <Slider
+                value={[expiryDays]}
+                min={1}
+                max={365}
+                step={1}
+                onValueChange={(value) => setExpiryDays(value[0])}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>1 gün</span>
+                <span>30 gün</span>
+                <span>90 gün</span>
+                <span>180 gün</span>
+                <span>365 gün</span>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 p-3 rounded-md">
+              <div className="flex items-start space-x-3">
+                <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div className="text-sm text-blue-800">
+                  <p>
+                    Bu davet kodu <strong>{maxUses}</strong> kişi tarafından kullanılabilecek ve <strong>{expiryDays}</strong> gün boyunca geçerli olacak.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter className="flex space-x-2 justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setShowCreateModal(false)}
+            >
+              İptal
+            </Button>
+            <Button
+              onClick={createInviteCode}
+              disabled={creating}
+            >
+              {creating ? 'Oluşturuluyor...' : 'Davet Kodu Oluştur'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
